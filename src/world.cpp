@@ -6,46 +6,13 @@
 using namespace std;
 using namespace Geek;
 
-#define CHUNK_POS(_i) ((_i >= 0) ? (_i % 16) : (((_i + 1) % 16) + 15))
 
 World::World() : Logger("World")
 {
     m_perlin = new PerlinNoise();
 }
 
-World::~World()
-{
-
-}
-
-void World::generate()
-{
-    for (int x = -100; x < 100; x++)
-    {
-        for (int z = -100; z < 100; z++)
-        {
-            float n = m_perlin->noise((float)x * 0.5, (float)z * 0.5) + 0.5;
-// log(DEBUG, "noise: %d, %d -> %0.2f", x, z, n);
-            int y = n * 8;
-            if (y < 0)
-            {
-                y = 0;
-            }
-            setBlock(x, y, z, new Block(GRASS));
-            y--;
-            for (; y > 0; y--)
-            {
-                setBlock(x, y, z, new Block(DIRT));
-            }
-        }
-    }
-
-    for (int y = 1; y < 16; y++)
-    {
-        setBlock(5, y, 5, new Block(DIRT));
-    }
-
-}
+World::~World() = default;
 
 Chunk* World::getChunk(int x, int z)
 {
@@ -62,6 +29,7 @@ Chunk* World::getChunk(int x, int z)
     {
         log(DEBUG, "getChunkFromBlock: Creating chunk: %s", chunkId);
         chunk = new Chunk(x, z);
+        chunk->generate(m_perlin);
         m_chunks.insert(make_pair(chunkId, chunk));
     }
 
@@ -76,15 +44,29 @@ Chunk* World::getChunkFromBlock(int x, int y, int z)
     return getChunk(chunkX, chunkZ);
 }
 
-void World::setBlock(int x, int y, int z, Block* block)
+void World::setBlock(int x, int y, int z, Block* block, bool updateVisibility)
 {
     Chunk* chunk = getChunkFromBlock(x, y, z);
     chunk->setBlock(CHUNK_POS(x), y , CHUNK_POS(z), block);
+    if (updateVisibility)
+    {
+        chunk->updateVisibility();
+    }
 }
 
 Block* World::getBlock(int x, int y, int z)
 {
     Chunk* chunk = getChunkFromBlock(x, y, z);
     return chunk->getBlock(CHUNK_POS(x), y, CHUNK_POS(z));
+}
+
+void World::setBlock(Vector &pos, Block* block, bool updateVisibility)
+{
+    setBlock(floor(pos.x), floor(pos.y), floor(pos.z), block, updateVisibility);
+}
+
+Block* World::getBlock(Vector &pos)
+{
+    return getBlock(floor(pos.x), floor(pos.y), floor(pos.z));
 }
 

@@ -14,9 +14,11 @@ class Texture : private Geek::Logger
  protected:
     Geek::Gfx::Surface* m_surface = nullptr;
 
+    void init();
     bool generateTexture();
 
  public:
+    explicit Texture(const char* filename);
     explicit Texture(Geek::Gfx::Surface* surface);
     virtual ~Texture();
 

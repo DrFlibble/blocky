@@ -3,24 +3,42 @@
 
 #include <geek/core-logger.h>
 
+class PerlinNoise;
+
+#define CHUNK_WIDTH 16
+#define CHUNK_HEIGHT 256
+
 enum BlockType
 {
+    AIR,
     DIRT,
-    GRASS
+    GRASS,
+    TARGET
 };
 
 class Block
 {
  private:
     BlockType m_type;
+    bool m_visible;
 
  public:
-    Block(BlockType type) { m_type = type; }
-    ~Block() {}
+    explicit Block(BlockType type) : m_type(type), m_visible(true) {}
+    ~Block() = default;
 
-    BlockType getType() const
+    [[nodiscard]] BlockType getType() const
     {
         return m_type;
+    }
+
+    [[nodiscard]] bool isVisible() const
+    {
+        return m_visible && m_type != AIR;
+    }
+
+    void setVisible(bool visible)
+    {
+        m_visible = visible;
     }
 };
 
@@ -29,13 +47,18 @@ class Chunk : private Geek::Logger
  private:
     int m_chunkX;
     int m_chunkZ;
+    int m_maxY = 0;
     Block** m_blocks;
-    int m_width;
 
- private:
-    int m_height;
+    [[nodiscard]] static bool validBlockNumber(int x, int y, int z)
+    {
+        return !(x < 0 || x >= CHUNK_WIDTH || y < 0 || y >= CHUNK_HEIGHT || z < 0 || z >= CHUNK_WIDTH);
+    }
 
-    [[nodiscard]] int blockNumber(int x, int y, int z);
+    [[nodiscard]] static int blockNumber(int x, int y, int z)
+    {
+        return (x * CHUNK_WIDTH * CHUNK_HEIGHT) + (z * CHUNK_HEIGHT) + y;
+    }
 
  public:
     Chunk(int chunkX, int chunkZ);
@@ -44,24 +67,22 @@ class Chunk : private Geek::Logger
     void setBlock(int x, int y, int z, Block* block);
     Block* getBlock(int x, int y, int z);
 
-    int getChunkX() const
+    void generate(PerlinNoise* perlin);
+    void updateVisibility();
+
+    [[nodiscard]] int getChunkX() const
     {
         return m_chunkX;
     }
 
-    int getChunkZ() const
+    [[nodiscard]] int getChunkZ() const
     {
         return m_chunkZ;
     }
 
-    [[nodiscard]] int getWidth() const
+    [[nodiscard]] int getMaxY() const
     {
-        return m_width;
-    }
-
-    [[nodiscard]] int getHeight() const
-    {
-        return m_height;
+        return m_maxY;
     }
 };
 

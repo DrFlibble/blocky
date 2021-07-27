@@ -1,7 +1,7 @@
 /* A simple Perlin noise generator */
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 
 #include "perlin.h"
 
@@ -51,7 +51,7 @@ float PerlinNoise::smooth1(int x, int y)
 
 static float perlin_interpolate_cosine(float a, float b, float x)
 {
-    float ft = x * M_PI;
+    float ft = x * (float)M_PI;
     float f = (1.0f - cos(ft)) * 0.5f;
 
     return (a * (1.0f - f)) + (b * f);
@@ -86,8 +86,8 @@ float PerlinNoise::noise(float x, float y)
 
     for (int i = 0; i < n; i++)
     {
-	    float freq = powf(2.0f, i);
-	    float amp = powf(p, i);
+	    float freq = powf(2.0f, (float)i);
+	    float amp = powf(p, (float)i);
         total += interpolate1(x * freq, y * freq) * amp;
     }
     return total;

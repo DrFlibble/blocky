@@ -1,5 +1,6 @@
 
 #include "texture.h"
+#include "blocky.h"
 
 #include <OpenGL/gl3.h>
 
@@ -18,10 +19,21 @@ static int powerOfTwo(int input)
     return value;
 }
 
+Texture::Texture(const char* filename) : Logger("Texture")
+{
+    init();
+    m_surface = Geek::Gfx::Surface::loadPNG(filename);
+}
+
 Texture::Texture(Surface* surface) : Logger("Texture"), m_surface(surface)
 {
-    glGenTextures(1, &m_texture);
-    glGenSamplers(1, &m_sampler);
+    init();
+}
+
+void Texture::init()
+{
+    GL(glGenTextures(1, &m_texture));
+    GL(glGenSamplers(1, &m_sampler));
 }
 
 Texture::~Texture()
@@ -38,8 +50,8 @@ void Texture::bind()
     {
         generateTexture();
     }
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glBindSampler(m_texture, m_sampler);
+    GL(glBindTexture(GL_TEXTURE_2D, m_texture));
+    GL(glBindSampler(m_texture, m_sampler));
 }
 
 bool Texture::generateTexture()
@@ -55,20 +67,21 @@ bool Texture::generateTexture()
         return false;
     }
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(
+    GL(glBindTexture(GL_TEXTURE_2D, m_texture));
+    GL(glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        4,
+        GL_RGBA,
         texWidth,
         texHeight,
         0,
         GL_BGRA,
         GL_UNSIGNED_BYTE,
-        m_surface->getData());
+        m_surface->getData()));
 
+    GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    GL(glGenerateMipmap(GL_TEXTURE_2D));
     m_textureValid = true;
     return true;
 }
