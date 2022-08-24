@@ -14,6 +14,7 @@
 #include <geek/core-logger.h>
 #include <geek/core-maths.h>
 #include <geek/core-matrix.h>
+#include <geek/fonts.h>
 
 class Texture;
 
@@ -42,11 +43,17 @@ static void checkGLError(const char* function, int line, const char* msg)
 class BlockyEngine : protected Geek::Logger
 {
  protected:
+    int m_screenWidth;
+    int m_screenHeight;
+
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = nullptr;
 
     Geek::Matrix4 m_matrixModelView;
     Geek::Matrix4 m_matrixProjection;
+
+    Geek::FontManager* m_fontManager;
+    Geek::FontHandle* m_font;
 
     virtual bool initShaders() = 0;
     virtual bool initGame() = 0;
@@ -63,6 +70,8 @@ class BlockyEngine : protected Geek::Logger
     void resize(int width, int height);
 
     void mainLoop();
+
+    void frame();
 };
 
 #endif //BLOCKY_ENGINE_H

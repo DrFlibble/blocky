@@ -15,7 +15,6 @@ class Texture : private Geek::Logger
     Geek::Gfx::Surface* m_surface = nullptr;
 
     void init();
-    bool generateTexture();
 
  public:
     explicit Texture(const char* filename);
@@ -23,6 +22,7 @@ class Texture : private Geek::Logger
     virtual ~Texture();
 
     void bind();
+    bool generateTexture();
 };
 
 #endif //BLOCKY_TEXTURE_H

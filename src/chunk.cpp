@@ -48,6 +48,7 @@ void Chunk::generate(PerlinNoise* perlin)
     {
         for (int z = 0; z < CHUNK_WIDTH; z++)
         {
+#if 1
             int worldX = x + (m_chunkX * 16);
             int worldZ = z + (m_chunkZ * 16);
             float n = perlin->noise((float) worldX * 0.5f, (float) worldZ * 0.5f) + 0.5f;
@@ -64,6 +65,9 @@ void Chunk::generate(PerlinNoise* perlin)
             {
                 setBlock(x, y, z, new Block(DIRT));
             }
+#endif
+#else
+            setBlock(x, 0, z, new Block(GRASS));
 #endif
         }
     }
@@ -101,11 +105,14 @@ void Chunk::updateVisibility()
                     }
                     if (y > m_maxY)
                     {
+                        log(DEBUG, "updateVisibility: m_maxY=%d", y);
                         m_maxY = y;
                     }
                 }
             }
         }
     }
+#if 0
     log(DEBUG, "updateVisibility: visible=%d, hidden=%d, m_maxY=%d", visible, hidden, m_maxY);
+#endif
 }

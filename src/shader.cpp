@@ -102,6 +102,11 @@ GLint ShaderProgram::getUniformLocation(const GLchar* name)
     return res;
 }
 
+void ShaderProgram::unuse() const
+{
+    GL(glUseProgram(0));
+}
+
 MainShader::MainShader() = default;
 
 MainShader::~MainShader() = default;
@@ -159,15 +164,8 @@ void MainShader::setMatrices(const Geek::Matrix4& modelView, const  Geek::Matrix
     GL(glUniform1i(m_uniformHighlight, highlight));
 }
 
-SkyShader::SkyShader()
-{
-
-}
-
-SkyShader::~SkyShader()
-{
-
-}
+SkyShader::SkyShader() = default;
+SkyShader::~SkyShader() = default;
 
 bool SkyShader::load()
 {
@@ -207,4 +205,57 @@ void SkyShader::setMatrices(const Matrix4 &modelView, const Matrix4 &viewProject
 void SkyShader::setTime(float time) const
 {
     glUniform1f(m_time, time);
+}
+
+OverlayShader::OverlayShader()
+{
+
+}
+
+OverlayShader::~OverlayShader()
+{
+
+}
+
+bool OverlayShader::load()
+{
+    bool res = ShaderProgram::load(GL_VERTEX_SHADER, "../data/shaders/ortho2D_vert.glsl");
+    if (!res)
+    {
+        return false;
+    }
+
+    res = ShaderProgram::load(GL_FRAGMENT_SHADER, "../data/shaders/ortho2D_frag.glsl");
+    if (!res)
+    {
+        return false;
+    }
+
+    res = link();
+    if (!res)
+    {
+        return false;
+    }
+
+    m_uniformPositionX = getUniformLocation("positionX");
+    m_uniformPositionY = getUniformLocation("positionY");
+    m_uniformWidth = getUniformLocation("width");
+    m_uniformHeight = getUniformLocation("height");
+    m_uniformTextureWidth = getUniformLocation("textureWidth");
+    m_uniformTextureHeight = getUniformLocation("textureHeight");
+
+    GLint sampler = getUniformLocation("map0");
+    GL(glUniform1i(sampler, 0));
+
+    return true;
+}
+
+void OverlayShader::set(float x, float y, float width, float height, float textureWidth, float texureHeight) const
+{
+    GL(glUniform1f(m_uniformPositionX, x));
+    GL(glUniform1f(m_uniformPositionY, y));
+    GL(glUniform1f(m_uniformWidth, width));
+    GL(glUniform1f(m_uniformHeight, height));
+    GL(glUniform1f(m_uniformTextureWidth, textureWidth));
+    GL(glUniform1f(m_uniformTextureHeight, texureHeight));
 }

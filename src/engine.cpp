@@ -35,7 +35,10 @@ bool BlockyEngine::init()
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
-    m_window = SDL_CreateWindow("Blocky", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+    m_screenWidth = 800;
+    m_screenHeight = 600;
+
+    m_window = SDL_CreateWindow("Blocky", 100, 100, m_screenWidth, m_screenHeight, SDL_WINDOW_OPENGL);
     m_context = SDL_GL_CreateContext(m_window);
 
     // 4-byte pixel alignment
@@ -47,8 +50,6 @@ bool BlockyEngine::init()
     GL(glEnable(GL_DEPTH_TEST));
     GL(glEnable(GL_CULL_FACE));
 
-    // background color
-    //GL(glClearColor(0.529, 0.808, 0.922, 0));
     GL(glClearColor(0.0, 0.0, 0.0, 0));
     // clear stencil buffer
     GL(glClearStencil(0));
@@ -67,6 +68,11 @@ bool BlockyEngine::init()
     {
         return false;
     }
+
+    m_fontManager = new Geek::FontManager;
+    m_fontManager->init();
+    m_fontManager->scan("../data/fonts");
+    m_font = m_fontManager->openFont("Lato", "Regular", 24);
 
     return true;
 }
@@ -96,7 +102,7 @@ void BlockyEngine::resize(int width, int height)
 
 void BlockyEngine::mainLoop()
 {
-    resize(800, 600);
+    resize(m_screenWidth, m_screenHeight);
 
     SDL_ShowCursor(false);
     SDL_WarpMouseInWindow(m_window, 400, 300);
@@ -116,7 +122,8 @@ void BlockyEngine::mainLoop()
         }
 
         update();
-        drawFrame();
+
+        frame();
 
         frames++;
         uint64_t time = SDL_GetTicks();
@@ -127,4 +134,15 @@ void BlockyEngine::mainLoop()
             frames = 0;
         }
     }
+}
+
+void BlockyEngine::frame()
+{
+    GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+
+    drawFrame();
+
+    GL(glUseProgram(0));
+
+    SDL_GL_SwapWindow(m_window);
 }

@@ -43,6 +43,7 @@ static const GLfloat g_cubeNormals[] = {
 };
 
 // texCoord array
+/*
 static const GLfloat g_cubeTexCoords[] = {
     1, 0, 0, 0, 0, 1, 1, 1,               // v0,v1,v2,v3 (front)
     0, 0, 0, 1, 1, 1, 1, 0,               // v0,v3,v4,v5 (right)
@@ -50,6 +51,38 @@ static const GLfloat g_cubeTexCoords[] = {
     1, 0, 0, 0, 0, 1, 1, 1,               // v1,v6,v7,v2 (left)
     0, 1, 1, 1, 1, 0, 0, 0,               // v7,v4,v3,v2 (bottom)
     0, 1, 1, 1, 1, 0, 0, 0                // v4,v7,v6,v5 (back)
+};
+*/
+static const GLfloat g_cubeTexCoords[] = {
+    // v0,v1,v2,v3 (front)
+    0.75, 0.25,
+    0.5, 0.25,
+    0.5, 0.5,
+    0.75, 0.5,
+
+    // v0,v3,v4,v5 (right)
+    0.75, 0.25,
+    0.75, 0.5,
+    1.0, 0.5,
+    1.0, 0.25,
+
+    // v0,v5,v6,v1 (top)
+    0.25, 0.0, 0.5, 0.0, 0.5, 0.25, 0.25, 0.25,
+
+    // v1,v6,v7,v2 (left)
+    0.5, 0.25,
+    0.25, 0.25,
+    0.25, 0.5,
+    0.5, 0.5,
+
+    // v7,v4,v3,v2 (bottom)
+    0.25, 0.5, 0.5, 0.5, 0.5, 0.75, 0.25, 0.75,
+
+    // v4,v7,v6,v5 (back)
+    0, 0.5,
+    0.25, 0.50,
+    0.25, 0.25,
+    0, 0.25,
 };
 
 // index array for glDrawElements() ===========================================
@@ -210,3 +243,21 @@ bool BlockModel::hitTriangle(Vector* vertices, const Vector &pos, Ray* ray, Hit 
 }
 
 
+void Model::draw()
+{
+    // activate attribs
+    GL(glEnableVertexAttribArray(0));
+    GL(glEnableVertexAttribArray(1));
+    GL(glEnableVertexAttribArray(2));
+
+    GL(glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, getPositionPtr()));
+    GL(glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, getNormalPtr()));
+    GL(glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, getTexCoordPtr()));
+
+    GL(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr));
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);//attribVertexNormal);
+    glDisableVertexAttribArray(2);//attribVertexTexCoord);
+
+}

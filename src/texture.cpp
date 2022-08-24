@@ -58,7 +58,9 @@ bool Texture::generateTexture()
 {
     int texWidth = powerOfTwo((int)m_surface->getWidth());
     int texHeight = powerOfTwo((int)m_surface->getHeight());
+#if 0
     log(DEBUG, "generateTexture: surface: %d, %d, texture: %d, %d", m_surface->getWidth(), m_surface->getHeight(), texWidth, texHeight);
+#endif
 
     if (texWidth != m_surface->getWidth() ||
         texHeight != m_surface->getHeight())
@@ -75,7 +77,7 @@ bool Texture::generateTexture()
         texWidth,
         texHeight,
         0,
-        GL_BGRA,
+        GL_RGBA,
         GL_UNSIGNED_BYTE,
         m_surface->getData()));
 

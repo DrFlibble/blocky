@@ -35,6 +35,8 @@ class Model
     virtual void bind() const = 0;
 
     virtual Side hit(const Geek::Vector& pos, Ray* ray) = 0;
+
+    void draw();
 };
 
 class BlockModel : public Model

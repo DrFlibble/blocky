@@ -12,7 +12,7 @@ class PerlinNoise
 
  public:
     PerlinNoise();
-    // PerlinNoise(int seed);
+    PerlinNoise(int seed);
     float noise(float x, float y);
 };
 

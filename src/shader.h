@@ -20,6 +20,7 @@ class ShaderProgram : private Geek::Logger
     bool load(GLenum type, const char* source);
     bool link();
     void use() const;
+    void unuse() const;
 
     GLint getUniformLocation(const GLchar *name);
 };
@@ -61,6 +62,24 @@ class SkyShader : public ShaderProgram
     bool load();
     void setTime(float time) const;
     void setMatrices(const Geek::Matrix4& modelView, const Geek::Matrix4& viewProjection) const;
+};
+
+class OverlayShader : public ShaderProgram
+{
+ private:
+    GLint m_uniformPositionX = 0;
+    GLint m_uniformPositionY = 0;
+    GLint m_uniformWidth = 0;
+    GLint m_uniformHeight = 0;
+    GLint m_uniformTextureWidth = 0;
+    GLint m_uniformTextureHeight = 0;
+
+ public:
+    OverlayShader();
+    ~OverlayShader() override;
+
+    bool load();
+    void set(float x, float y, float width, float height, float textureWidth, float textureHeight) const;
 };
 
 #endif //BLOCKY_SHADER_H
