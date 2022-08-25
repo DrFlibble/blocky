@@ -23,6 +23,7 @@ class MainShader;
 class SkyShader;
 class OverlayShader;
 class BlockModel;
+class Overlay;
 
 class Blocky : public BlockyEngine
 {
@@ -46,22 +47,20 @@ class Blocky : public BlockyEngine
     Texture* m_grassTexture = nullptr;
     Texture* m_targetTexture = nullptr;
 
-    Geek::Gfx::Surface* m_overlaySurface = nullptr;
-    Texture* m_overlayTexture = nullptr;
+    Overlay* m_crossHairOverlay = nullptr;
+    Overlay* m_infoOverlay = nullptr;
 
     World* m_world = nullptr;
 
     GLuint m_skyVAO = 0;
-
-    GLuint m_overlayIBO = 0;
-    GLuint m_overlayVBO = 0;
     GLuint m_overlayVAO = 0;
 
     float m_lastMillis = 0;
 
-    // Movement
+    // Movement TODO: Vector!
     float m_strafe = 0;
     float m_forward = 0;
+    float m_jump = 0;
 
     bool initShaders() override;
     bool initGame() override;
@@ -78,6 +77,11 @@ class Blocky : public BlockyEngine
     void drawFrame() override;
 
     bool handleEvent(SDL_Event* event) override;
+
+    int getWidth() { return m_screenWidth; }
+    int getHeight() { return m_screenHeight; }
+    [[nodiscard]] GLuint getOverlayVAO() const { return m_overlayVAO; }
+    [[nodiscard]] OverlayShader* getOverlayShader() const { return m_overlayProgram; }
 };
 
 #endif //BLOCKY_BLOCKY_H

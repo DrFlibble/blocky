@@ -7,7 +7,7 @@
 using namespace std;
 using namespace Geek;
 
-Chunk::Chunk(int chunkX, int chunkZ) : Logger("Chunk"), m_chunkX(chunkX), m_chunkZ(chunkZ)
+Chunk::Chunk(World* world, int chunkX, int chunkZ) : Logger("Chunk"), m_world(world), m_chunkX(chunkX), m_chunkZ(chunkZ)
 {
     m_blocks = new Block*[CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT];
     for (int i = 0; i < CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT; i++)
@@ -52,7 +52,7 @@ void Chunk::generate(PerlinNoise* perlin)
             int worldX = x + (m_chunkX * 16);
             int worldZ = z + (m_chunkZ * 16);
             float n = perlin->noise((float) worldX * 0.5f, (float) worldZ * 0.5f) + 0.5f;
-            auto y = (int)(n * 8.0f);
+            auto y = (int)(n * 16.0f);
             if (y < 0)
             {
                 y = 0;
@@ -105,7 +105,9 @@ void Chunk::updateVisibility()
                     }
                     if (y > m_maxY)
                     {
+#if 0
                         log(DEBUG, "updateVisibility: m_maxY=%d", y);
+#endif
                         m_maxY = y;
                     }
                 }

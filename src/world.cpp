@@ -28,7 +28,7 @@ Chunk* World::getChunk(int x, int z)
     else
     {
         log(DEBUG, "getChunkFromBlock: Creating chunk: %s", chunkId);
-        chunk = new Chunk(x, z);
+        chunk = new Chunk(this, x, z);
         chunk->generate(m_perlin);
         m_chunks.insert(make_pair(chunkId, chunk));
     }

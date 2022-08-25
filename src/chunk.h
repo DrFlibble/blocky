@@ -2,8 +2,10 @@
 #define BLOCKY_CHUNK_H
 
 #include <geek/core-logger.h>
+#include "world.h"
 
 class PerlinNoise;
+class World;
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 256
@@ -45,6 +47,7 @@ class Block
 class Chunk : private Geek::Logger
 {
  private:
+    World* m_world;
     int m_chunkX;
     int m_chunkZ;
     int m_maxY = 0;
@@ -61,7 +64,7 @@ class Chunk : private Geek::Logger
     }
 
  public:
-    Chunk(int chunkX, int chunkZ);
+    Chunk(World* world, int chunkX, int chunkZ);
     ~Chunk();
 
     void setBlock(int x, int y, int z, Block* block);

@@ -13,6 +13,9 @@
 #include "chunk.h"
 #include "perlin.h"
 
+class Chunk;
+class Block;
+
 #define CHUNK_NUM(_i) ((_i >= 0) ? (_i / 16) : (((_i + 1) /16) - 1))
 #define CHUNK_POS(_i) ((_i >= 0) ? (_i % 16) : (((_i + 1) % 16) + 15))
 

@@ -8,6 +8,8 @@ using namespace Geek;
 
 BlockyEngine::BlockyEngine(const string& name) : Logger("BlockyEngine[" + name + "]")
 {
+    m_screenWidth = 800;
+    m_screenHeight = 600;
 }
 
 BlockyEngine::~BlockyEngine()
@@ -34,9 +36,6 @@ bool BlockyEngine::init()
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
-
-    m_screenWidth = 800;
-    m_screenHeight = 600;
 
     m_window = SDL_CreateWindow("Blocky", 100, 100, m_screenWidth, m_screenHeight, SDL_WINDOW_OPENGL);
     m_context = SDL_GL_CreateContext(m_window);
@@ -72,7 +71,7 @@ bool BlockyEngine::init()
     m_fontManager = new Geek::FontManager;
     m_fontManager->init();
     m_fontManager->scan("../data/fonts");
-    m_font = m_fontManager->openFont("Lato", "Regular", 24);
+    m_font = m_fontManager->openFont("Lato", "Regular", 12);
 
     return true;
 }

@@ -52,8 +52,8 @@ class BlockyEngine : protected Geek::Logger
     Geek::Matrix4 m_matrixModelView;
     Geek::Matrix4 m_matrixProjection;
 
-    Geek::FontManager* m_fontManager;
-    Geek::FontHandle* m_font;
+    Geek::FontManager* m_fontManager = nullptr;
+    Geek::FontHandle* m_font = nullptr;
 
     virtual bool initShaders() = 0;
     virtual bool initGame() = 0;

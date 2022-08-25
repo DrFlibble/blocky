@@ -5,12 +5,13 @@
 #include "shader.h"
 #include "blocky.h"
 #include "ray.h"
+#include "overlay.h"
 
-#include <wchar.h>
-#include <string.h>
+#include <cwchar>
 
 using namespace std;
 using namespace Geek;
+using namespace Geek::Gfx;
 
 Blocky::Blocky() : BlockyEngine("Blocky")
 {
@@ -35,10 +36,6 @@ bool Blocky::initGame()
     m_dirtTexture = new Texture("../dirt-512.png");
     m_grassTexture = new Texture("../grassblock.png");
     m_targetTexture = new Texture("../target-512.png");
-
-    m_overlaySurface = new Geek::Gfx::Surface(512, 512, 4);
-    m_overlaySurface->clear(0x00ff00);
-    m_overlayTexture = new Texture(m_overlaySurface);
 
     return true;
 }
@@ -80,6 +77,8 @@ bool Blocky::initShaders()
 
     m_overlayProgram->unuse();
 
+    m_crossHairOverlay = new Overlay(this, 16, 16);
+    m_infoOverlay = new Overlay(this, 200, 30);
 
     return true;
 }
@@ -99,8 +98,6 @@ void Blocky::drawBox(const Matrix4 &matrix, bool highlight)
 
 void Blocky::drawFrame()
 {
-    Matrix4 matrixModel;
-
     m_matrixModelView.identity();
     m_matrixModelView.rotateY(m_heading);   // heading
     m_matrixModelView.rotateX(m_pitch);   // pitch
@@ -128,29 +125,46 @@ void Blocky::drawFrame()
         }
     }
 
+    glDisable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    Surface* crosshair = m_crossHairOverlay->getSurface();
+    crosshair->clear(0xff000000);
+    crosshair->drawRect(0, 7, 6, 2, 0xffffffff);
+    crosshair->drawRect(9, 7, 6, 2, 0xffffffff);
+    crosshair->drawRect(7, 0, 2, 6, 0xffffffff);
+    crosshair->drawRect(7, 9, 2, 6, 0xffffffff);
+
+    m_crossHairOverlay->draw((m_screenWidth / 2) - 8, (m_screenHeight / 2) - 8);
+
+    Surface* infoSurface = m_infoOverlay->getSurface();
+    infoSurface->clear(0xff000000);
+
     wchar_t buf[200];
     swprintf(buf, 200, L"X: %0.2f, Y: %0.2f, Z: %0.2f",
              m_player.x,
              m_player.y,
              m_player.z);
+    m_fontManager->write(m_font, infoSurface, 0, 0, buf, 0xffffff, true, nullptr);
 
-    m_overlaySurface->drawRectFilled(0, 0, 255, 255, 0xff0000);
-    //m_overlaySurface->drawRectFilled(256, 0, 255, 255, 0x00ff00);
-    //m_overlaySurface->drawRectFilled(0, 256, 255, 255, 0x0000ff);
-    m_fontManager->write(m_font, m_overlaySurface, 10, 10, buf, 0xffffffff, true, nullptr);
-    m_overlayTexture->generateTexture();
+    if (m_lookingAt != nullptr)
+    {
+        swprintf(buf, 200, L"Looking at: X: %0.2f, Y: %0.2f, Z: %0.2f",
+                 m_lookingAtPos.x,
+                 m_lookingAtPos.y,
+                 m_lookingAtPos.z);
+        m_fontManager->write(m_font, infoSurface, 0, 12, buf, 0xffffff, true, nullptr);
 
-    glDisable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
+    }
 
-    m_overlayProgram->use();
-    m_overlayTexture->bind();
-    m_overlayProgram->set(0.5, 0.5, 0.25, 0.25 / 2, 1, 0.5);
+    m_infoOverlay->draw(0, 0);
 
-    glBindVertexArray(m_overlayVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+    glDisable(GL_BLEND);
 }
 
 void Blocky::drawChunk(Chunk* chunk)
@@ -234,6 +248,10 @@ bool Blocky::handleEvent(SDL_Event* event)
         else if (event->key.keysym.sym == SDLK_d)
         {
             m_strafe = 0.2f;
+        }
+        else if (m_jump <= 0 && event->key.keysym.sym == SDLK_SPACE)
+        {
+            m_jump = 1.0f;
         }
     }
     else if (event->type == SDL_MOUSEMOTION)
@@ -361,7 +379,7 @@ void Blocky::update()
     if ((time - m_lastMillis) > (1000 / 60))
     {
         Vector origPosition = m_player;
-        bool moving = fabs(m_forward) > EPSILON || fabs(m_strafe) > EPSILON;
+        bool moving = fabs(m_forward) > EPSILON || fabs(m_strafe) > EPSILON || m_jump > 0;
 
         Vector checkPos = m_player;
         if (moving)
@@ -382,6 +400,19 @@ void Blocky::update()
                                         * 2);
             m_forward *= 0.75f;
             m_strafe *= 0.5f;
+
+            if (m_jump > 0)
+            {
+                if (m_jump > 0.5)
+                {
+                    m_player.y += 0.2;
+                }
+                else
+                {
+                    m_player.y -= 0.2;
+                }
+                m_jump -= 0.1;
+            }
         }
         m_lastMillis = time;
 
@@ -421,7 +452,7 @@ void Blocky::update()
             }
         }
 
-        if (canMove && !hasBlockUnderPlayer)
+        if (canMove && !hasBlockUnderPlayer && m_jump <= 0)
         {
             // Falling!
             if (m_player.y > 0)

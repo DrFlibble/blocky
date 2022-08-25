@@ -1,23 +1,12 @@
 
 #include "texture.h"
 #include "blocky.h"
+#include "utils.h"
 
 #include <OpenGL/gl3.h>
 
 using namespace Geek;
 using namespace Geek::Gfx;
-
-// Find the smallest power of two that will contain the input
-static int powerOfTwo(int input)
-{
-    int value = 1;
-
-    while (value < input)
-    {
-        value <<= 1;
-    }
-    return value;
-}
 
 Texture::Texture(const char* filename) : Logger("Texture")
 {
