@@ -12,6 +12,7 @@
 
 #include "chunk.h"
 #include "perlin.h"
+#include "player.h"
 
 class Chunk;
 class Block;
@@ -25,11 +26,15 @@ class World : private Geek::Logger
     std::map<std::string, Chunk*> m_chunks;
     PerlinNoise* m_perlin = nullptr;
 
+    Player m_player;
+
  public:
     World();
     ~World();
 
     //void generate();
+
+    Player& getPlayer() { return m_player; }
 
     Chunk* getChunk(int x, int z);
     Chunk* getChunkFromBlock(int x, int y, int z);
@@ -38,6 +43,8 @@ class World : private Geek::Logger
     void setBlock(int x, int y, int z, Block* block, bool updateVisibility = false);
     Block* getBlock(int x, int y, int z);
     Block* getBlock(Geek::Vector& pos);
+
+    void save();
 };
 
 #endif //BLOCKY_WORLD_H

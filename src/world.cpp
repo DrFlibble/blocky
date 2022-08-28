@@ -3,8 +3,12 @@
 
 #include "world.h"
 
+#include <geek/core-data.h>
+#include <nlohmann/json.hpp>
+
 using namespace std;
 using namespace Geek;
+using namespace nlohmann;
 
 
 World::World() : Logger("World")
@@ -70,3 +74,30 @@ Block* World::getBlock(Vector &pos)
     return getBlock(floor(pos.x), floor(pos.y), floor(pos.z));
 }
 
+void World::save()
+{
+    json world = json::object();
+
+    world["chunks"] = json::array();
+
+    json player;
+    player["pos"]["x"] = m_player.getPosition().x;
+    player["pos"]["y"] = m_player.getPosition().y;
+    player["pos"]["z"] = m_player.getPosition().z;
+    world["player"] = player;
+
+    for (auto it : this->m_chunks)
+    {
+        auto chunk = it.second;
+        log(DEBUG, "save: Saving chunk: %p", chunk);
+        json chunkJson = chunk->getJson();
+        world["chunks"].push_back(chunkJson);
+    }
+    string str = to_string(world);
+    log(DEBUG, "save: str:\n%s\n", str.c_str());
+
+    auto bson = world.to_cbor(world);
+    Data* data = new Data((char*)bson.data(), bson.size());
+    data->writeCompressed("test.world", DataCompression::GZIP);
+
+}

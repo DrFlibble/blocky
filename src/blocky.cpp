@@ -15,7 +15,6 @@ using namespace Geek::Gfx;
 
 Blocky::Blocky() : BlockyEngine("Blocky")
 {
-    m_player.set(0, 16.0, 0);
     m_world = new World();
 }
 
@@ -33,8 +32,15 @@ bool Blocky::initGame()
         return false;
     }
 
-    m_dirtTexture = new Texture("../dirt-512.png");
-    m_grassTexture = new Texture("../grassblock.png");
+    Surface* dirtSurface = Surface::loadPNG("../dirt-512.png");
+    Surface* grassSurface = Surface::loadPNG("../grassblock.png");
+    Surface* stoneSurface = Surface::loadPNG("../stone.png");
+    m_dirtTexture = new Texture(dirtSurface);
+    m_grassTexture = new Texture(grassSurface);
+    m_stoneTexture = new Texture(stoneSurface);
+    m_dirtIcon = dirtSurface->scaleToFit(30, 30);
+    m_grassIcon = grassSurface->scaleToFit(30, 30);
+    m_stoneIcon = stoneSurface->scaleToFit(30, 30);
     m_targetTexture = new Texture("../target-512.png");
 
     return true;
@@ -78,7 +84,20 @@ bool Blocky::initShaders()
     m_overlayProgram->unuse();
 
     m_crossHairOverlay = new Overlay(this, 16, 16);
-    m_infoOverlay = new Overlay(this, 200, 30);
+    Surface* crosshair = m_crossHairOverlay->getSurface();
+    crosshair->clear(0xff000000);
+    crosshair->drawRect(0, 7, 6, 2, 0xffffffff);
+    crosshair->drawRect(9, 7, 6, 2, 0xffffffff);
+    crosshair->drawRect(7, 0, 2, 6, 0xffffffff);
+    crosshair->drawRect(7, 9, 2, 6, 0xffffffff);
+
+    m_infoOverlay = new Overlay(this, 300, 30);
+
+    m_statusBarOverlay = new Overlay(this, 330, 50);
+    Surface* heartIcon = Surface::loadPNG("../data/images/37.png");
+    m_heartIcon = heartIcon->scaleToFit(16, 16);
+    Surface* shieldIcon = Surface::loadPNG("../data/images/183_1.png");
+    m_shieldIcon = shieldIcon->scaleToFit(16, 16);
 
     return true;
 }
@@ -98,13 +117,11 @@ void Blocky::drawBox(const Matrix4 &matrix, bool highlight)
 
 void Blocky::drawFrame()
 {
-    m_matrixModelView.identity();
-    m_matrixModelView.rotateY(m_heading);   // heading
-    m_matrixModelView.rotateX(m_pitch);   // pitch
+    m_matrixModelView = m_world->getPlayer().getMatrix();
 
     int drawDistance = 2;
-    int playerChunkX = CHUNK_NUM((int) m_player.x);
-    int playerChunkZ = CHUNK_NUM((int) m_player.z);
+    int playerChunkX = CHUNK_NUM((int) m_world->getPlayer().getPosition().x);
+    int playerChunkZ = CHUNK_NUM((int) m_world->getPlayer().getPosition().z);
 
     // Sky
     m_skyProgram->use();
@@ -131,36 +148,68 @@ void Blocky::drawFrame()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    Surface* crosshair = m_crossHairOverlay->getSurface();
-    crosshair->clear(0xff000000);
-    crosshair->drawRect(0, 7, 6, 2, 0xffffffff);
-    crosshair->drawRect(9, 7, 6, 2, 0xffffffff);
-    crosshair->drawRect(7, 0, 2, 6, 0xffffffff);
-    crosshair->drawRect(7, 9, 2, 6, 0xffffffff);
-
-    m_crossHairOverlay->draw((m_screenWidth / 2) - 8, (m_screenHeight / 2) - 8);
+   m_crossHairOverlay->draw(OVERLAY_CENTRE, OVERLAY_CENTRE);
 
     Surface* infoSurface = m_infoOverlay->getSurface();
     infoSurface->clear(0xff000000);
 
     wchar_t buf[200];
     swprintf(buf, 200, L"X: %0.2f, Y: %0.2f, Z: %0.2f",
-             m_player.x,
-             m_player.y,
-             m_player.z);
+             m_world->getPlayer().getPosition().x,
+             m_world->getPlayer().getPosition().y,
+             m_world->getPlayer().getPosition().z);
     m_fontManager->write(m_font, infoSurface, 0, 0, buf, 0xffffff, true, nullptr);
 
     if (m_lookingAt != nullptr)
     {
-        swprintf(buf, 200, L"Looking at: X: %0.2f, Y: %0.2f, Z: %0.2f",
+        swprintf(buf, 200, L"Looking at: X: %0.2f, Y: %0.2f, Z: %0.2f Type: %d",
                  m_lookingAtPos.x,
                  m_lookingAtPos.y,
-                 m_lookingAtPos.z);
+                 m_lookingAtPos.z,
+                 m_lookingAt->getType());
         m_fontManager->write(m_font, infoSurface, 0, 12, buf, 0xffffff, true, nullptr);
 
     }
-
     m_infoOverlay->draw(0, 0);
+
+    Surface* statusBarSurface = m_statusBarOverlay->getSurface();
+    statusBarSurface->clear(0xff000000);
+    int i;
+    for (i = 0; i < (int)m_world->getPlayer().getHealth(); i++)
+    {
+        statusBarSurface->blit(2 + (16 * i), 2, m_heartIcon, false);
+    }
+
+    for (i = 0; i < 3; i++)
+    {
+        statusBarSurface->blit(
+            m_statusBarOverlay->getWidth() - (16 * (i + 1)),
+            2,
+            m_shieldIcon,
+            false);
+    }
+
+    for (i = 0; i < 10; i++)
+    {
+        int sbx = 2 + (i * 32);
+        if (i == m_world->getPlayer().getInventorySlot())
+        {
+            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xffffffff);
+        }
+        else
+        {
+            //statusBarSurface->drawRect(sbx, 18, 32, 32, 0xffffffff);
+        }
+        if (i == 0)
+        {
+            statusBarSurface->blit(sbx + 1, 19, m_stoneIcon);
+        }
+        else if (i == 1)
+        {
+            statusBarSurface->blit(sbx + 1, 19, m_grassIcon);
+        }
+    }
+    m_statusBarOverlay->draw(OVERLAY_CENTRE, OVERLAY_END);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -173,15 +222,16 @@ void Blocky::drawChunk(Chunk* chunk)
     //rotateMatrix.rotateY(m_heading);   // heading
     //rotateMatrix.rotateX(m_pitch);   // pitch
     BlockType lastType = AIR;
-    double viewY = m_player.y + m_playerHeight;
+    Vector pos = m_world->getPlayer().getPosition();
+    double viewY = pos.y + m_world->getPlayer().getHeight();
     for (int chunkX = 0; chunkX < CHUNK_WIDTH; chunkX++)
     {
         int worldX = chunkX + chunk->getChunkX() * CHUNK_WIDTH;
-        float x = (float) worldX - (float) m_player.x;
+        float x = (float) worldX - (float) pos.x;
         for (int chunkZ = 0; chunkZ < CHUNK_WIDTH; chunkZ++)
         {
             int worldZ = chunkZ + chunk->getChunkZ() * CHUNK_WIDTH;
-            float z = (float) worldZ - (float) m_player.z;
+            float z = (float) worldZ - (float) pos.z;
             for (int y = 0; y <= chunk->getMaxY(); y++)
             {
                 const Block* block = chunk->getBlock(chunkX, y, chunkZ);
@@ -190,7 +240,7 @@ void Blocky::drawChunk(Chunk* chunk)
                 {
                     BlockType type = block->getType();
                     bool highlight = false;
-                    if (m_lookingAt == block || worldX == floor(m_player.x) && worldZ == floor(m_player.z))
+                    if (m_lookingAt == block || worldX == floor(pos.x) && worldZ == floor(pos.z))
                     {
                         //type = TARGET;
                         highlight = true;
@@ -206,6 +256,9 @@ void Blocky::drawChunk(Chunk* chunk)
                             case GRASS:
                                 m_grassTexture->bind();
                                 break;
+                            case STONE:
+                                m_stoneTexture->bind();
+                                break;
                             case TARGET:
                                 m_targetTexture->bind();
                                 break;
@@ -220,8 +273,8 @@ void Blocky::drawChunk(Chunk* chunk)
                     matrix.translate(x + offset, ((float) y - viewY) + offset, z + offset);
                     //matrix *= m_matrixModelView;
                     //matrix *= rotateMatrix;
-                    matrix.rotateY(m_heading);   // heading
-                    matrix.rotateX(m_pitch);   // pitch
+                    matrix.rotateY(m_world->getPlayer().getHeading());   // heading
+                    matrix.rotateX(m_world->getPlayer().getPitch());   // pitch
                     drawBox(matrix, highlight);
                 }
             }
@@ -235,42 +288,63 @@ bool Blocky::handleEvent(SDL_Event* event)
     {
         if (event->key.keysym.sym == SDLK_w)
         {
-            m_forward = 0.2f;
+            m_world->getPlayer().setForward(0.2f);
         }
         else if (event->key.keysym.sym == SDLK_s)
         {
-            m_forward = -0.2f;
+            m_world->getPlayer().setForward(-0.2f);
         }
         else if (event->key.keysym.sym == SDLK_a)
         {
-            m_strafe = -0.2f;
+            m_world->getPlayer().setStrafe(-0.2f);
         }
         else if (event->key.keysym.sym == SDLK_d)
         {
-            m_strafe = 0.2f;
+            m_world->getPlayer().setStrafe(0.2f);
         }
-        else if (m_jump <= 0 && event->key.keysym.sym == SDLK_SPACE)
+        else if (m_world->getPlayer().getJump() <= 0 && event->key.keysym.sym == SDLK_SPACE)
         {
-            m_jump = 1.0f;
+            m_world->getPlayer().setJump(1.0f);
         }
     }
-    else if (event->type == SDL_MOUSEMOTION)
+    else if (event->type == SDL_KEYUP)
     {
-        m_heading += (float) (event->motion.x - 400) * 0.1f;
-        m_pitch += (float) (event->motion.y - 300) * 0.1f;
-        if (m_pitch > 90.0)
+        int sym = event->key.keysym.sym;
+        if (sym >= SDLK_1 && sym <= SDLK_9)
         {
-            m_pitch = 90.0;
+            m_world->getPlayer().setInventorySlot(sym - SDLK_1);
         }
-        else if (m_pitch < -90.0)
+        else if (sym == SDLK_0)
         {
-            m_pitch = -90.0;
+            m_world->getPlayer().setInventorySlot(9);
         }
-        SDL_WarpMouseInWindow(m_window, 400, 300);
+        else if (sym == SDLK_ESCAPE)
+        {
+            log(DEBUG, "ESCAPE!");
+            m_moveMode = false;
+            releaseMouse();
+        }
+    }
+    else if (m_moveMode && event->type == SDL_MOUSEMOTION)
+    {
+        float heading = m_world->getPlayer().getHeading();
+        float pitch = m_world->getPlayer().getPitch();
+        heading += (float) (event->motion.xrel) * 0.1f;
+        pitch += (float) (event->motion.yrel) * 0.1f;
+        if (pitch > 90.0)
+        {
+            pitch = 90.0;
+        }
+        else if (pitch < -90.0)
+        {
+            pitch = -90.0;
+        }
+        m_world->getPlayer().setHeading(heading);
+        m_world->getPlayer().setPitch(pitch);
     }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
-        if (m_lookingAt != nullptr && m_lookingAtPos.y >= 0)
+        if (m_moveMode && m_lookingAt != nullptr && m_lookingAtPos.y >= 0)
         {
             SDL_Keymod keyMod = SDL_GetModState();
             if (event->button.button == SDL_BUTTON_LEFT && (keyMod & KMOD_CTRL) == 0)
@@ -315,12 +389,23 @@ bool Blocky::handleEvent(SDL_Event* event)
                     block);
                 if (block == nullptr)
                 {
-                    m_world->setBlock(newPos, new Block(GRASS), true);
+                    if (m_world->getPlayer().getInventorySlot() == 0)
+                    {
+                        m_world->setBlock(newPos, new Block(STONE), true);
+                    }
+                    if (m_world->getPlayer().getInventorySlot() == 1)
+                    {
+                        m_world->setBlock(newPos, new Block(GRASS), true);
+                    }
                     calcLookAt();
                 }
             }
         }
-
+        else if (!m_moveMode)
+        {
+            captureMouse();
+            m_moveMode = true;
+        }
     }
     return true;
 }
@@ -328,15 +413,15 @@ bool Blocky::handleEvent(SDL_Event* event)
 void Blocky::calcLookAt()
 {
     // Which direction are we looking at?
-    float xzLen = cosf((float) m_pitch * ((float)M_PI / 180.0f));
+    float xzLen = cosf((float) m_world->getPlayer().getPitch() * ((float)M_PI / 180.0f));
     Vector v;
-    v.x = xzLen * sinf(-m_heading * ((float)M_PI / 180.0f));
-    v.y = sinf(m_pitch * ((float)M_PI / 180.0f));
-    v.z = xzLen * cosf(m_heading * ((float)M_PI / 180.0f));
+    v.x = xzLen * sinf(-m_world->getPlayer().getHeading() * ((float)M_PI / 180.0f));
+    v.y = sinf(m_world->getPlayer().getPitch() * ((float)M_PI / 180.0f));
+    v.z = xzLen * cosf(m_world->getPlayer().getHeading() * ((float)M_PI / 180.0f));
     v = -v;
 
-    Vector viewPos = m_player;
-    viewPos.y += m_playerHeight;
+    Vector viewPos = m_world->getPlayer().getPosition();
+    viewPos.y += m_world->getPlayer().getHeight();
     Ray ray(viewPos, v);
 
     m_lookingAt = nullptr;
@@ -372,46 +457,49 @@ void Blocky::calcLookAt()
 
 void Blocky::update()
 {
-    double headingSin = sin(m_heading * (M_PI / 180.0));
-    double headingCos = cos(m_heading * (M_PI / 180.0));
+    double headingSin = sin(m_world->getPlayer().getHeading() * (M_PI / 180.0));
+    double headingCos = cos(m_world->getPlayer().getHeading() * (M_PI / 180.0));
 
     uint64_t time = SDL_GetTicks();
     if ((time - m_lastMillis) > (1000 / 60))
     {
-        Vector origPosition = m_player;
-        bool moving = fabs(m_forward) > EPSILON || fabs(m_strafe) > EPSILON || m_jump > 0;
+        Vector origPosition = m_world->getPlayer().getPosition();
+        bool moving =
+            fabs(m_world->getPlayer().getForward()) > EPSILON ||
+            fabs(m_world->getPlayer().getStrafe()) > EPSILON ||
+            m_world->getPlayer().getJump() > 0;
 
-        Vector checkPos = m_player;
+        Vector checkPos = m_world->getPlayer().getPosition();
         if (moving)
         {
-            m_player.x +=
-                headingSin * m_forward
+            m_world->getPlayer().getPosition().x +=
+                headingSin * m_world->getPlayer().getForward()
                 +
-                headingCos * m_strafe;
-            m_player.z += headingCos * -m_forward +
-                          headingSin * m_strafe;
+                headingCos * m_world->getPlayer().getStrafe();
+            m_world->getPlayer().getPosition().z += headingCos * -m_world->getPlayer().getForward() +
+                          headingSin * m_world->getPlayer().getStrafe();
             checkPos.x +=
-                headingSin * (m_forward
+                headingSin * (m_world->getPlayer().getForward()
                               * 2) +
-                headingCos * (m_strafe
+                headingCos * (m_world->getPlayer().getStrafe()
                               * 2);
-            checkPos.z += headingCos * -(m_forward * 2) +
-                          headingSin * (m_strafe
+            checkPos.z += headingCos * -(m_world->getPlayer().getForward() * 2) +
+                          headingSin * (m_world->getPlayer().getStrafe()
                                         * 2);
-            m_forward *= 0.75f;
-            m_strafe *= 0.5f;
+            m_world->getPlayer().setForward(m_world->getPlayer().getForward() * 0.75f);
+            m_world->getPlayer().setStrafe(m_world->getPlayer().getStrafe() * 0.75f);
 
-            if (m_jump > 0)
+            if (m_world->getPlayer().getJump() > 0)
             {
-                if (m_jump > 0.5)
+                if (m_world->getPlayer().getJump() > 0.5)
                 {
-                    m_player.y += 0.2;
+                    m_world->getPlayer().getPosition().y += 0.2;
                 }
                 else
                 {
-                    m_player.y -= 0.2;
+                    m_world->getPlayer().getPosition().y -= 0.2;
                 }
-                m_jump -= 0.1;
+                m_world->getPlayer().setJump(m_world->getPlayer().getJump() - 0.1);
             }
         }
         m_lastMillis = time;
@@ -447,28 +535,33 @@ void Blocky::update()
             else if (hasBlockAtPlayer)
             {
                 canMove = true;
-                m_player.y++;
+                m_world->getPlayer().getPosition().y++;
                 hasBlockUnderPlayer = true;
             }
         }
 
-        if (canMove && !hasBlockUnderPlayer && m_jump <= 0)
+        if (canMove && !hasBlockUnderPlayer && m_world->getPlayer().getJump() <= 0)
         {
             // Falling!
-            if (m_player.y > 0)
+            if (m_world->getPlayer().getPosition().y > 0)
             {
-                m_player.y -= 1;
+                m_world->getPlayer().getPosition().y -= 1;
             }
         }
 
         if (!canMove)
         {
             // Nope! No moving for you!
-            m_player = origPosition;
-            m_forward = 0.0f;
-            m_strafe = 0.0f;
+            m_world->getPlayer().setPosition(origPosition);
+            m_world->getPlayer().setForward(0.0f);
+            m_world->getPlayer().setStrafe(0.0f);
         }
 
         calcLookAt();
     }
+}
+
+void Blocky::exit()
+{
+    m_world->save();
 }

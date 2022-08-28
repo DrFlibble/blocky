@@ -28,16 +28,36 @@ Overlay::~Overlay() = default;
 
 void Overlay::draw(int x, int y)
 {
-
     OverlayShader* shader = m_blocky->getOverlayShader();
     shader->use();
     m_overlayTexture->generateTexture();
     m_overlayTexture->bind();
+
+    if (x == OVERLAY_CENTRE)
+    {
+        x = (m_blocky->getWidth() / 2) - (m_width / 2);
+    }
+    else if (x == OVERLAY_END)
+    {
+        x = m_blocky->getWidth() - m_width;
+    }
+
+    if (y == OVERLAY_CENTRE)
+    {
+        y = (m_blocky->getHeight() / 2) - (m_height / 2);
+    }
+    else if (y == OVERLAY_END)
+    {
+        y = m_blocky->getHeight() - m_height;
+    }
+
+    float sw = (float)m_blocky->getWidth();
+    float sh = (float)m_blocky->getHeight();
     shader->set(
-        (float)x / (float)m_blocky->getWidth(),
-        (float)y / (float)m_blocky->getHeight(),
-        (float)m_width / (float)m_blocky->getWidth(),
-        (float)m_height / (float)m_blocky->getHeight(),
+        (float)x / sw,
+        (float)y / sh,
+        (float)m_width / sw,
+        (float)m_height / sh,
         (float)m_width / (float)m_overlaySurface->getWidth(),
         (float)m_height / (float)m_overlaySurface->getHeight());
 

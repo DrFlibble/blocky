@@ -45,6 +45,7 @@ class BlockyEngine : protected Geek::Logger
  protected:
     int m_screenWidth;
     int m_screenHeight;
+    bool m_moveMode = true;
 
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = nullptr;
@@ -60,6 +61,10 @@ class BlockyEngine : protected Geek::Logger
     virtual bool handleEvent(SDL_Event* event) = 0;
     virtual void update() = 0;
     virtual void drawFrame() = 0;
+    virtual void exit() {}
+
+    void captureMouse();
+    void releaseMouse();
 
  public:
     explicit BlockyEngine(const std::string& name);

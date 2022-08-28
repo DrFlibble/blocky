@@ -14,6 +14,7 @@
 
 #include "blockmodel.h"
 #include "engine.h"
+#include "player.h"
 
 class World;
 class Texture;
@@ -29,11 +30,7 @@ class Blocky : public BlockyEngine
 {
  private:
     Model* m_blockModel = nullptr;
-    Geek::Vector m_player;
 
-    float m_heading = 0;
-    float m_pitch = 0;
-    float m_playerHeight = 1.8;
 
     Block* m_lookingAt = nullptr;
     Side m_lookingAtSide = NONE;
@@ -43,12 +40,20 @@ class Blocky : public BlockyEngine
     SkyShader* m_skyProgram = nullptr;
     OverlayShader* m_overlayProgram = nullptr;
 
+    Geek::Gfx::Surface* m_dirtIcon = nullptr;
     Texture* m_dirtTexture = nullptr;
+    Geek::Gfx::Surface* m_grassIcon = nullptr;
     Texture* m_grassTexture = nullptr;
+    Geek::Gfx::Surface* m_stoneIcon = nullptr;
+    Texture* m_stoneTexture = nullptr;
     Texture* m_targetTexture = nullptr;
 
     Overlay* m_crossHairOverlay = nullptr;
     Overlay* m_infoOverlay = nullptr;
+    Overlay* m_statusBarOverlay = nullptr;
+
+    Geek::Gfx::Surface* m_heartIcon = nullptr;
+    Geek::Gfx::Surface* m_shieldIcon = nullptr;
 
     World* m_world = nullptr;
 
@@ -57,10 +62,6 @@ class Blocky : public BlockyEngine
 
     float m_lastMillis = 0;
 
-    // Movement TODO: Vector!
-    float m_strafe = 0;
-    float m_forward = 0;
-    float m_jump = 0;
 
     bool initShaders() override;
     bool initGame() override;
@@ -75,6 +76,7 @@ class Blocky : public BlockyEngine
 
     void update() override;
     void drawFrame() override;
+    void exit() override;
 
     bool handleEvent(SDL_Event* event) override;
 

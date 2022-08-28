@@ -3,20 +3,15 @@
 
 #include <geek/core-logger.h>
 #include "world.h"
+#include "blocks.h"
+
+#include <nlohmann/json.hpp>
 
 class PerlinNoise;
 class World;
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 256
-
-enum BlockType
-{
-    AIR,
-    DIRT,
-    GRASS,
-    TARGET
-};
 
 class Block
 {
@@ -87,6 +82,8 @@ class Chunk : private Geek::Logger
     {
         return m_maxY;
     }
+
+    nlohmann::json getJson();
 };
 
 #endif //BLOCKY_CHUNK_H

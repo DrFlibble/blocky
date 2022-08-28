@@ -37,7 +37,13 @@ bool BlockyEngine::init()
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
-    m_window = SDL_CreateWindow("Blocky", 100, 100, m_screenWidth, m_screenHeight, SDL_WINDOW_OPENGL);
+    m_window = SDL_CreateWindow(
+        "Blocky",
+        100,
+        100,
+        m_screenWidth,
+        m_screenHeight,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE /*| SDL_WINDOW_MOUSE_GRABBED*/);
     m_context = SDL_GL_CreateContext(m_window);
 
     // 4-byte pixel alignment
@@ -78,6 +84,9 @@ bool BlockyEngine::init()
 
 void BlockyEngine::resize(int width, int height)
 {
+    m_screenWidth = width;
+    m_screenHeight = height;
+
     // Setup our viewport
     GL(glViewport(0, 0, width, height));
 
@@ -103,8 +112,8 @@ void BlockyEngine::mainLoop()
 {
     resize(m_screenWidth, m_screenHeight);
 
-    SDL_ShowCursor(false);
-    SDL_WarpMouseInWindow(m_window, 400, 300);
+    captureMouse();
+    //SDL_WarpMouseInWindow(m_window, 400, 300);
     uint64_t fpsMillis = SDL_GetTicks();
     int frames = 0;
 
@@ -115,7 +124,15 @@ void BlockyEngine::mainLoop()
         {
             if (event.type == SDL_QUIT)
             {
+                exit();
                 return;
+            }
+            else if (event.type == SDL_WINDOWEVENT)
+            {
+                if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                {
+                    resize(event.window.data1, event.window.data2);
+                }
             }
             handleEvent(&event);
         }
@@ -144,4 +161,20 @@ void BlockyEngine::frame()
     GL(glUseProgram(0));
 
     SDL_GL_SwapWindow(m_window);
+}
+
+void BlockyEngine::captureMouse()
+{
+    SDL_WarpMouseInWindow(m_window, 0, 0);
+    SDL_SetWindowInputFocus(m_window);
+    SDL_CaptureMouse(SDL_TRUE);
+    SDL_ShowCursor(SDL_FALSE);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+}
+
+void BlockyEngine::releaseMouse()
+{
+    SDL_CaptureMouse(SDL_FALSE);
+    SDL_ShowCursor(SDL_TRUE);
+    SDL_SetRelativeMouseMode(SDL_FALSE);
 }

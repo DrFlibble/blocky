@@ -6,6 +6,9 @@
 
 class Blocky;
 
+#define OVERLAY_CENTRE -1000
+#define OVERLAY_END -2000
+
 class Overlay
 {
  private:
@@ -24,6 +27,15 @@ class Overlay
 
     void draw(int x, int y);
 
+    int getWidth() const
+    {
+        return m_width;
+    }
+
+    int getHeight() const
+    {
+        return m_height;
+    }
 };
 
 
