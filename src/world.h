@@ -9,6 +9,7 @@
 
 #include <geek/core-logger.h>
 #include <geek/core-maths.h>
+#include <geek/core-random.h>
 
 #include "chunk.h"
 #include "perlin.h"
@@ -23,6 +24,8 @@ class Block;
 class World : private Geek::Logger
 {
  private:
+    Geek::Core::Random* m_random;
+    uint64_t m_seed;
     std::map<std::string, Chunk*> m_chunks;
     PerlinNoise* m_perlin = nullptr;
 
@@ -31,8 +34,6 @@ class World : private Geek::Logger
  public:
     World();
     ~World();
-
-    //void generate();
 
     Player& getPlayer() { return m_player; }
 
@@ -44,6 +45,7 @@ class World : private Geek::Logger
     Block* getBlock(int x, int y, int z);
     Block* getBlock(Geek::Vector& pos);
 
+    void load();
     void save();
 };
 

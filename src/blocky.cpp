@@ -160,7 +160,7 @@ void Blocky::drawChunk(Chunk* chunk)
                 {
                     BlockType type = block->getType();
                     bool highlight = false;
-                    if (m_lookingAt == block || worldX == floor(pos.x) && worldZ == floor(pos.z))
+                    if (m_lookingAt == block || (worldX == floor(pos.x) && worldZ == floor(pos.z)))
                     {
                         //type = TARGET;
                         highlight = true;
@@ -183,6 +183,7 @@ void Blocky::drawChunk(Chunk* chunk)
                                 m_targetTexture->bind();
                                 break;
                             case AIR:
+                            case EMPTY:
                                 // How did we get here?
                                 break;
                         }

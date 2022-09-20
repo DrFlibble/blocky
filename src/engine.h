@@ -18,6 +18,7 @@
 
 class Texture;
 
+#ifdef DEBUG_OPENGL
 static void checkGLError(const char* function, int line, const char* msg)
 {
     GLenum err = glGetError();
@@ -27,17 +28,19 @@ static void checkGLError(const char* function, int line, const char* msg)
         abort();
     }
 }
+#endif
 
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
-#define CHECK_GL_ERROR(__msg) checkGLError(__PRETTY_FUNCTION__, __LINE__, __msg);
 
 //#define DEBUG_OPENGL
 #ifdef DEBUG_OPENGL
 #define GL(__cmd) {__cmd;  checkGLError(__PRETTY_FUNCTION__, __LINE__, STRINGIFY(__cmd)); }
 #define GLRES(__cmd) { auto __r = __cmd;  checkGLError(__PRETTY_FUNCTION__, __LINE__, STRINGIFY(__cmd)); __r; }
+#define CHECK_GL_ERROR(__msg) checkGLError(__PRETTY_FUNCTION__, __LINE__, __msg);
 #else
 #define GL(__cmd) __cmd
+#define CHECK_GL_ERROR(__msg) {}
 #endif
 
 class BlockyEngine : protected Geek::Logger

@@ -42,11 +42,13 @@ class Block
 class Chunk : private Geek::Logger
 {
  private:
-    World* m_world;
+    [[maybe_unused]] World* m_world;
     int m_chunkX;
     int m_chunkZ;
     int m_maxY = 0;
     Block** m_blocks;
+
+    void init();
 
     [[nodiscard]] static bool validBlockNumber(int x, int y, int z)
     {
@@ -59,6 +61,7 @@ class Chunk : private Geek::Logger
     }
 
  public:
+    Chunk(World* world);
     Chunk(World* world, int chunkX, int chunkZ);
     ~Chunk();
 
@@ -83,6 +86,7 @@ class Chunk : private Geek::Logger
         return m_maxY;
     }
 
+    void fromJson(nlohmann::json json);
     nlohmann::json getJson();
 };
 

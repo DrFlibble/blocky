@@ -8,6 +8,10 @@ using namespace std;
 using namespace Geek;
 using namespace nlohmann;
 
+Chunk::Chunk(World* world) : Chunk(world, 0, 0)
+{
+}
+
 Chunk::Chunk(World* world, int chunkX, int chunkZ) : Logger("Chunk"), m_world(world), m_chunkX(chunkX), m_chunkZ(chunkZ)
 {
     m_blocks = new Block*[CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT];
@@ -22,6 +26,10 @@ Chunk::~Chunk()
     delete m_blocks;
 }
 
+void Chunk::init()
+{
+
+}
 void Chunk::setBlock(int x, int y, int z, Block* block)
 {
     if (!validBlockNumber(x, y, z))
@@ -129,7 +137,8 @@ json Chunk::getJson()
 {
     json chunkJson = json::object();
     chunkJson["x"] = m_chunkX;
-    chunkJson["y"] = m_chunkZ;
+    chunkJson["y"] = 0;
+    chunkJson["z"] = m_chunkZ;
     chunkJson["blocks"] = json::array();
 
     for (int x = 0; x < CHUNK_WIDTH; x++)
@@ -144,7 +153,7 @@ json Chunk::getJson()
                     json blockJson = json::object();
                     blockJson["pos"] = json::object();
                     blockJson["pos"]["x"] = x;
-                    blockJson["pos"]["y"] = x;
+                    blockJson["pos"]["y"] = y;
                     blockJson["pos"]["z"] = z;
                     blockJson["t"] = block->getType();
                     chunkJson["blocks"].push_back(blockJson);
@@ -154,4 +163,21 @@ json Chunk::getJson()
     }
 
     return chunkJson;
+}
+
+void Chunk::fromJson(nlohmann::json json)
+{
+    m_chunkX = json["x"];
+    m_chunkZ = json["z"];
+
+    for (nlohmann::json blockJson : json["blocks"])
+    {
+        int x = blockJson["pos"]["x"];
+        int y = blockJson["pos"]["y"];
+        int z = blockJson["pos"]["z"];
+        int type = blockJson["t"];
+        Block* block = new Block(static_cast<BlockType>(type));
+        setBlock(x, y, z, block);
+    }
+    updateVisibility();
 }

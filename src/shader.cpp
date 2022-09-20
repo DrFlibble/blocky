@@ -98,7 +98,7 @@ GLint ShaderProgram::getUniformLocation(const GLchar* name)
     use();
     GLint res = glGetUniformLocation(m_progId, name);
     log(DEBUG, "getUniformLocation: %s -> %d", name, res);
-    checkGLError(__PRETTY_FUNCTION__, __LINE__, "glGetUniformLocation");
+    CHECK_GL_ERROR("glGetUniformLocation");
     return res;
 }
 

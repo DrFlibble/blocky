@@ -4,7 +4,7 @@
 class PerlinNoise
 {
  private:
-    int m_seed;
+    uint64_t m_seed;
 
     inline float noise1(int x, int y);
     inline float smooth1(int x, int y);
@@ -12,7 +12,7 @@ class PerlinNoise
 
  public:
     PerlinNoise();
-    PerlinNoise(int seed);
+    PerlinNoise(uint64_t seed);
     float noise(float x, float y);
 };
 

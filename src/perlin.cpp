@@ -7,18 +7,19 @@
 
 PerlinNoise::PerlinNoise()
 {
-    m_seed = rand();// * rand();
+    m_seed = (uint64_t)rand() << 32;
+    m_seed |= (uint64_t)rand();
 }
 
-PerlinNoise::PerlinNoise(int seed)
+PerlinNoise::PerlinNoise(uint64_t seed)
 {
     m_seed = seed;
 }
 
 float PerlinNoise::noise1(int x, int y)
 {
-    unsigned int r1;
-    unsigned int n;
+    uint64_t r1;
+    uint64_t n;
 
     n = x + y * 57;
     n *= m_seed;

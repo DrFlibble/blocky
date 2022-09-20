@@ -1,5 +1,6 @@
 
 #include "blocky.h"
+#include "world.h"
 
 using namespace std;
 using namespace Geek;
@@ -15,7 +16,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
         return 0;
     }
 
-    blocky.mainLoop();
+    blocky.getWorld()->load();
 
+    blocky.mainLoop();
     return 0;
 }
