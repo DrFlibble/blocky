@@ -15,6 +15,9 @@
 #include "blockmodel.h"
 #include "engine.h"
 #include "player.h"
+#include "overlays/crosshair.h"
+#include "overlays/infooverlay.h"
+#include "overlays/statusbar.h"
 
 class World;
 class Texture;
@@ -40,20 +43,14 @@ class Blocky : public BlockyEngine
     SkyShader* m_skyProgram = nullptr;
     OverlayShader* m_overlayProgram = nullptr;
 
-    Geek::Gfx::Surface* m_dirtIcon = nullptr;
     Texture* m_dirtTexture = nullptr;
-    Geek::Gfx::Surface* m_grassIcon = nullptr;
     Texture* m_grassTexture = nullptr;
-    Geek::Gfx::Surface* m_stoneIcon = nullptr;
     Texture* m_stoneTexture = nullptr;
     Texture* m_targetTexture = nullptr;
 
-    Overlay* m_crossHairOverlay = nullptr;
-    Overlay* m_infoOverlay = nullptr;
-    Overlay* m_statusBarOverlay = nullptr;
-
-    Geek::Gfx::Surface* m_heartIcon = nullptr;
-    Geek::Gfx::Surface* m_shieldIcon = nullptr;
+    CrossHairOverlay* m_crossHairOverlay = nullptr;
+    InfoOverlay* m_infoOverlay = nullptr;
+    StatusBarOverlay* m_statusBarOverlay = nullptr;
 
     World* m_world = nullptr;
 
@@ -84,6 +81,11 @@ class Blocky : public BlockyEngine
     int getHeight() { return m_screenHeight; }
     [[nodiscard]] GLuint getOverlayVAO() const { return m_overlayVAO; }
     [[nodiscard]] OverlayShader* getOverlayShader() const { return m_overlayProgram; }
+
+    World* getWorld() const { return m_world; }
+
+    Block* getLookingAt() { return m_lookingAt; }
+    Geek::Vector getLookingAtPos() { return m_lookingAtPos; }
 };
 
 #endif //BLOCKY_BLOCKY_H

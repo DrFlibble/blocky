@@ -5,9 +5,6 @@
 #include "shader.h"
 #include "blocky.h"
 #include "ray.h"
-#include "overlay.h"
-
-#include <cwchar>
 
 using namespace std;
 using namespace Geek;
@@ -38,9 +35,6 @@ bool Blocky::initGame()
     m_dirtTexture = new Texture(dirtSurface);
     m_grassTexture = new Texture(grassSurface);
     m_stoneTexture = new Texture(stoneSurface);
-    m_dirtIcon = dirtSurface->scaleToFit(30, 30);
-    m_grassIcon = grassSurface->scaleToFit(30, 30);
-    m_stoneIcon = stoneSurface->scaleToFit(30, 30);
     m_targetTexture = new Texture("../target-512.png");
 
     return true;
@@ -83,21 +77,9 @@ bool Blocky::initShaders()
 
     m_overlayProgram->unuse();
 
-    m_crossHairOverlay = new Overlay(this, 16, 16);
-    Surface* crosshair = m_crossHairOverlay->getSurface();
-    crosshair->clear(0xff000000);
-    crosshair->drawRect(0, 7, 6, 2, 0xffffffff);
-    crosshair->drawRect(9, 7, 6, 2, 0xffffffff);
-    crosshair->drawRect(7, 0, 2, 6, 0xffffffff);
-    crosshair->drawRect(7, 9, 2, 6, 0xffffffff);
-
-    m_infoOverlay = new Overlay(this, 300, 30);
-
-    m_statusBarOverlay = new Overlay(this, 330, 50);
-    Surface* heartIcon = Surface::loadPNG("../data/images/37.png");
-    m_heartIcon = heartIcon->scaleToFit(16, 16);
-    Surface* shieldIcon = Surface::loadPNG("../data/images/183_1.png");
-    m_shieldIcon = shieldIcon->scaleToFit(16, 16);
+    m_crossHairOverlay = new CrossHairOverlay(this);
+    m_infoOverlay = new InfoOverlay(this);
+    m_statusBarOverlay = new StatusBarOverlay(this);
 
     return true;
 }
@@ -148,68 +130,9 @@ void Blocky::drawFrame()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-   m_crossHairOverlay->draw(OVERLAY_CENTRE, OVERLAY_CENTRE);
-
-    Surface* infoSurface = m_infoOverlay->getSurface();
-    infoSurface->clear(0xff000000);
-
-    wchar_t buf[200];
-    swprintf(buf, 200, L"X: %0.2f, Y: %0.2f, Z: %0.2f",
-             m_world->getPlayer().getPosition().x,
-             m_world->getPlayer().getPosition().y,
-             m_world->getPlayer().getPosition().z);
-    m_fontManager->write(m_font, infoSurface, 0, 0, buf, 0xffffff, true, nullptr);
-
-    if (m_lookingAt != nullptr)
-    {
-        swprintf(buf, 200, L"Looking at: X: %0.2f, Y: %0.2f, Z: %0.2f Type: %d",
-                 m_lookingAtPos.x,
-                 m_lookingAtPos.y,
-                 m_lookingAtPos.z,
-                 m_lookingAt->getType());
-        m_fontManager->write(m_font, infoSurface, 0, 12, buf, 0xffffff, true, nullptr);
-
-    }
-    m_infoOverlay->draw(0, 0);
-
-    Surface* statusBarSurface = m_statusBarOverlay->getSurface();
-    statusBarSurface->clear(0xff000000);
-    int i;
-    for (i = 0; i < (int)m_world->getPlayer().getHealth(); i++)
-    {
-        statusBarSurface->blit(2 + (16 * i), 2, m_heartIcon, false);
-    }
-
-    for (i = 0; i < 3; i++)
-    {
-        statusBarSurface->blit(
-            m_statusBarOverlay->getWidth() - (16 * (i + 1)),
-            2,
-            m_shieldIcon,
-            false);
-    }
-
-    for (i = 0; i < 10; i++)
-    {
-        int sbx = 2 + (i * 32);
-        if (i == m_world->getPlayer().getInventorySlot())
-        {
-            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xffffffff);
-        }
-        else
-        {
-            //statusBarSurface->drawRect(sbx, 18, 32, 32, 0xffffffff);
-        }
-        if (i == 0)
-        {
-            statusBarSurface->blit(sbx + 1, 19, m_stoneIcon);
-        }
-        else if (i == 1)
-        {
-            statusBarSurface->blit(sbx + 1, 19, m_grassIcon);
-        }
-    }
-    m_statusBarOverlay->draw(OVERLAY_CENTRE, OVERLAY_END);
+    m_crossHairOverlay->draw();
+    m_infoOverlay->draw();
+    m_statusBarOverlay->draw();
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -218,9 +141,6 @@ void Blocky::drawFrame()
 
 void Blocky::drawChunk(Chunk* chunk)
 {
-    //Matrix4 rotateMatrix;
-    //rotateMatrix.rotateY(m_heading);   // heading
-    //rotateMatrix.rotateX(m_pitch);   // pitch
     BlockType lastType = AIR;
     Vector pos = m_world->getPlayer().getPosition();
     double viewY = pos.y + m_world->getPlayer().getHeight();

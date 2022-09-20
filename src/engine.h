@@ -77,6 +77,9 @@ class BlockyEngine : protected Geek::Logger
     void mainLoop();
 
     void frame();
+
+    Geek::FontManager* getFontManager() { return m_fontManager; }
+    Geek::FontHandle* getFont() { return m_font; }
 };
 
 #endif //BLOCKY_ENGINE_H

@@ -21,11 +21,17 @@ class Overlay
 
  public:
     Overlay(Blocky* blocky, int width, int height);
-    ~Overlay();
+    virtual ~Overlay();
 
     Geek::Gfx::Surface* getSurface() { return m_overlaySurface; }
 
+    virtual void draw() {draw(0, 0); }
     void draw(int x, int y);
+
+    Blocky* getBlocky() const
+    {
+        return m_blocky;
+    }
 
     int getWidth() const
     {
