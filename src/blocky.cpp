@@ -339,11 +339,11 @@ bool Blocky::handleEvent(SDL_Event* event)
 void Blocky::calcLookAt()
 {
     // Which direction are we looking at?
-    float xzLen = cosf((float) m_world->getPlayer().getPitch() * ((float)M_PI / 180.0f));
+    double xzLen = cos(m_world->getPlayer().getPitch() * (M_PI / 180.0));
     Vector v;
-    v.x = xzLen * sinf(-m_world->getPlayer().getHeading() * ((float)M_PI / 180.0f));
-    v.y = sinf(m_world->getPlayer().getPitch() * ((float)M_PI / 180.0f));
-    v.z = xzLen * cosf(m_world->getPlayer().getHeading() * ((float)M_PI / 180.0f));
+    v.x = xzLen * sin(-m_world->getPlayer().getHeading() * (M_PI / 180.0));
+    v.y = sin(m_world->getPlayer().getPitch() * (M_PI / 180.0));
+    v.z = xzLen * cos(m_world->getPlayer().getHeading() * (M_PI / 180.0));
     v = -v;
 
     Vector viewPos = m_world->getPlayer().getPosition();
@@ -353,25 +353,25 @@ void Blocky::calcLookAt()
     m_lookingAt = nullptr;
     m_lookingAtSide = NONE;
     Vector last;
-    for (float dist = 0; dist < 10.0; dist += 0.1f)
+    for (float dist = 0; dist < 10.0; dist += 0.2f)
     {
-        Vector v = ray.at(dist);
-        v.x = floor(v.x);
-        v.y = floor(v.y);
-        v.z = floor(v.z);
+        Vector rayPos = ray.at(dist);
+        rayPos.x = floor(rayPos.x);
+        rayPos.y = floor(rayPos.y);
+        rayPos.z = floor(rayPos.z);
 
-        if (v.x == last.x && v.y == last.y && v.z == last.z)
+        if (rayPos.x == last.x && rayPos.y == last.y && rayPos.z == last.z)
         {
             // We've already checked this block!
             continue;
         }
-        last = v;
+        last = rayPos;
 
-        Block* block = m_world->getBlock(v);
+        Block* block = m_world->getBlock(rayPos);
         if (block != nullptr && block->isVisible())
         {
             m_lookingAt = block;
-            m_lookingAtPos = v;
+            m_lookingAtPos = rayPos;
             break;
         }
     }
