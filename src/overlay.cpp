@@ -7,8 +7,6 @@
 #include "shader.h"
 #include "utils.h"
 
-#include <OpenGL/gl3.h>
-
 Overlay::Overlay(Blocky* blocky, int width, int height)
 {
     m_blocky = blocky;

@@ -1,7 +1,8 @@
 #ifndef BLOCKY_BLOCKMODEL_H
 #define BLOCKY_BLOCKMODEL_H
 
-#include <OpenGL/gl3.h>
+#include "engine.h"
+
 #include <geek/core-maths.h>
 
 class Ray;
