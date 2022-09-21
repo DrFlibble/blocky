@@ -53,20 +53,48 @@ void StatusBarOverlay::draw()
         int sbx = 2 + (i * 32);
         if (i == world->getPlayer().getInventorySlot())
         {
-            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xffffffff);
+            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xffff0000);
         }
         else
         {
-            //statusBarSurface->drawRect(sbx, 18, 32, 32, 0xffffffff);
+            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xffffffff);
         }
+
+        BlockContainer container = world->getPlayer().getInventorySlot(i);
+        Surface* icon = nullptr;
+        switch (container.type)
+        {
+            case GRASS:
+                icon = m_grassIcon;
+                break;
+            case DIRT:
+                icon = m_dirtIcon;
+                break;
+            case STONE:
+                icon = m_stoneIcon;
+                break;
+            default:
+                // Empty
+                break;
+        }
+        if (icon != nullptr && container.count > 0)
+        {
+            statusBarSurface->blit(sbx + 1, 19, icon);
+            wchar_t buf[200];
+            swprintf(buf, 200, L"%d",
+                     container.count);
+            getBlocky()->getFontManager()->write(getBlocky()->getFont(), statusBarSurface, sbx + 2, 20, buf, 0xffffff, true, nullptr);
+
+        }
+        /*
         if (i == 0)
         {
-            statusBarSurface->blit(sbx + 1, 19, m_stoneIcon);
         }
         else if (i == 1)
         {
             statusBarSurface->blit(sbx + 1, 19, m_grassIcon);
         }
+         */
     }
 
     Overlay::draw(OVERLAY_CENTRE, OVERLAY_END);

@@ -14,7 +14,7 @@ class Player
 
     float m_heading = 0;
     float m_pitch = 0;
-    float m_playerHeight = 1.8;
+    //float m_playerHeight = 1.8;
 
     // Movement TODO: Vector!
     float m_strafe = 0;
@@ -89,7 +89,12 @@ class Player
         m_health = health;
     }
 
+    BlockContainer& getInventorySlot(int slot)
+    {
+        return m_inventory[slot];
+    }
     BlockContainer& getInventoryByBlockType(BlockType type);
+    void addBlockToInventory(BlockType type);
 
     int getInventorySlot() const
     {

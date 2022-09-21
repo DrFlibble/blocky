@@ -270,6 +270,12 @@ bool Blocky::handleEvent(SDL_Event* event)
             SDL_Keymod keyMod = SDL_GetModState();
             if (event->button.button == SDL_BUTTON_LEFT && (keyMod & KMOD_CTRL) == 0)
             {
+                Block* brokenBlock = m_world->getBlock(m_lookingAtPos);
+                if (brokenBlock != nullptr)
+                {
+                    log(DEBUG, "handleEvent: Broken block: type=%d", brokenBlock->getType());
+                    m_world->getPlayer().addBlockToInventory(brokenBlock->getType());
+                }
                 m_world->setBlock(m_lookingAtPos, nullptr, true);
                 calcLookAt();
             }
@@ -310,15 +316,14 @@ bool Blocky::handleEvent(SDL_Event* event)
                     block);
                 if (block == nullptr)
                 {
-                    if (m_world->getPlayer().getInventorySlot() == 0)
+                    BlockContainer& container = m_world->getPlayer().getInventorySlot(
+                    m_world->getPlayer().getInventorySlot());
+                    if (container.type != EMPTY && container.count > 0)
                     {
-                        m_world->setBlock(newPos, new Block(STONE), true);
+                        m_world->setBlock(newPos, new Block(container.type), true);
+                        container.count--;
+                        calcLookAt();
                     }
-                    if (m_world->getPlayer().getInventorySlot() == 1)
-                    {
-                        m_world->setBlock(newPos, new Block(GRASS), true);
-                    }
-                    calcLookAt();
                 }
             }
         }
