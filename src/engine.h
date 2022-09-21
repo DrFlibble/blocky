@@ -3,7 +3,20 @@
 
 #ifndef BLOCKY_ENGINE_H
 #define BLOCKY_ENGINE_H
+
+#ifdef __APPLE__
+#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED 1
+#include <OpenGL/OpenGLAvailability.h>
+#include <OpenGL/gl.h>
 #include <OpenGL/gl3.h>
+#else
+
+#define GL_GLEXT_PROTOTYPES 1
+#define GL3_PROTOTYPES 1
+
+#include <GL/gl.h>
+#endif
+
 #include <cstdio>
 #include <cstdlib>
 #include <SDL.h>

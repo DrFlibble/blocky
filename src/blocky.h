@@ -1,7 +1,6 @@
 #ifndef BLOCKY_BLOCKY_H
 #define BLOCKY_BLOCKY_H
 
-#include <OpenGL/gl3.h>
 #include <cstdio>
 #include <cstdlib>
 #include <SDL.h>
