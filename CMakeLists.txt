@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.19)
 project(blocky)
 
 include(FindOpenGL)
-include(FindGLU)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libgeek REQUIRED libgeek)
@@ -42,4 +41,4 @@ add_executable(blocky
         src/overlays/crosshair.cpp
         src/overlays/crosshair.h
         src/overlays/infooverlay.cpp src/overlays/infooverlay.h src/overlays/statusbar.cpp src/overlays/statusbar.h)
-target_link_libraries(blocky ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLU_LIBARIES} ${sdl2_LDFLAGS} ${libgeek_LDFLAGS} ${nlohmann_json_LDFLAGS})
+target_link_libraries(blocky ${OPENGL_LIBRARIES} ${sdl2_LDFLAGS} ${libgeek_LDFLAGS} ${nlohmann_json_LDFLAGS})
