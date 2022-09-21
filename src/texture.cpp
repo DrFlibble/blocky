@@ -49,8 +49,8 @@ bool Texture::generateTexture()
     log(DEBUG, "generateTexture: surface: %d, %d, texture: %d, %d", m_surface->getWidth(), m_surface->getHeight(), texWidth, texHeight);
 #endif
 
-    if (texWidth != m_surface->getWidth() ||
-        texHeight != m_surface->getHeight())
+    if (texWidth != (int)m_surface->getWidth() ||
+        texHeight != (int)m_surface->getHeight())
     {
         log(ERROR, "generateTexture: Handle non-power-of-two surface size");
         return false;

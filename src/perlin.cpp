@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <cstdint>
 
 #include "perlin.h"
 
