@@ -3,8 +3,6 @@
 #include "blocky.h"
 #include "utils.h"
 
-#include <OpenGL/gl3.h>
-
 using namespace Geek;
 using namespace Geek::Gfx;
 
