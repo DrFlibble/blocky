@@ -35,7 +35,7 @@ Chunk* World::getChunk(int x, int z)
     else
     {
         log(DEBUG, "getChunkFromBlock: Creating chunk: %s", chunkId);
-        chunk = new Chunk(this, x, z);
+        chunk = new Chunk(x, z);
         chunk->generate(m_perlin);
         m_chunks.insert(make_pair(chunkId, chunk));
     }
@@ -100,7 +100,7 @@ void World::load()
     for (json chunkJson : world["chunks"])
     {
         log(DEBUG, "load: Chunk: x=%d, z=%d", (int)chunkJson["x"], (int)chunkJson["z"]);
-        Chunk* chunk = new Chunk(this);
+        Chunk* chunk = new Chunk();
         chunk->fromJson(chunkJson);
 
         char chunkId[1024];

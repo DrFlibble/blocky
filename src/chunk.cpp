@@ -8,11 +8,11 @@ using namespace std;
 using namespace Geek;
 using namespace nlohmann;
 
-Chunk::Chunk(World* world) : Chunk(world, 0, 0)
+Chunk::Chunk() : Chunk(0, 0)
 {
 }
 
-Chunk::Chunk(World* world, int chunkX, int chunkZ) : Logger("Chunk"), m_world(world), m_chunkX(chunkX), m_chunkZ(chunkZ)
+Chunk::Chunk(int chunkX, int chunkZ) : Logger("Chunk"), m_chunkX(chunkX), m_chunkZ(chunkZ)
 {
     m_blocks = new Block*[CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT];
     for (int i = 0; i < CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT; i++)
@@ -26,10 +26,6 @@ Chunk::~Chunk()
     delete m_blocks;
 }
 
-void Chunk::init()
-{
-
-}
 void Chunk::setBlock(int x, int y, int z, Block* block)
 {
     if (!validBlockNumber(x, y, z))
@@ -91,8 +87,10 @@ void Chunk::generate(PerlinNoise* perlin)
 void Chunk::updateVisibility()
 {
     m_maxY = 0;
+#if 0
     int visible = 0;
     int hidden = 0;
+#endif
     for (int x = 0; x < CHUNK_WIDTH - 1; x++)
     {
         for (int y = 0; y < CHUNK_HEIGHT - 1; y++)
@@ -110,12 +108,16 @@ void Chunk::updateVisibility()
                         getBlock(x, y, z + 1) != nullptr)
                     {
                         block->setVisible(false);
+#if 0
                         hidden++;
+#endif
                     }
                     else
                     {
                         block->setVisible(true);
+#if 0
                         visible++;
+#endif
                     }
                     if (y > m_maxY)
                     {
@@ -176,8 +178,7 @@ void Chunk::fromJson(nlohmann::json json)
         int y = blockJson["pos"]["y"];
         int z = blockJson["pos"]["z"];
         int type = blockJson["t"];
-        Block* block = new Block(static_cast<BlockType>(type));
-        setBlock(x, y, z, block);
+        setBlock(x, y, z, new Block(static_cast<BlockType>(type)));
     }
     updateVisibility();
 }
