@@ -2,6 +2,7 @@
 //
 
 #include "world.h"
+#include "entity.h"
 
 #include <geek/core-data.h>
 #include <nlohmann/json.hpp>
@@ -11,7 +12,7 @@ using namespace Geek;
 using namespace nlohmann;
 
 
-World::World() : Logger("World")
+World::World() : Logger("World"), m_player(this)
 {
     m_random = new Geek::Core::Random();
     m_seed = (uint64_t)m_random->rand32() << 32;
@@ -114,6 +115,16 @@ void World::load()
     m_player.setHeading(world["player"]["heading"]);
     m_player.setPitch(world["player"]["pitch"]);
     m_player.setHealth(world["player"]["health"]);
+
+    for (int i = 0; i < 10; i++)
+    {
+        json invSlot = world["player"]["inventory"][i];
+        if (!invSlot.empty())
+        {
+            m_player.getInventorySlot(i).type = invSlot["type"];
+            m_player.getInventorySlot(i).count = invSlot["count"];
+        }
+    }
 }
 
 void World::save()
@@ -130,9 +141,17 @@ void World::save()
     player["heading"] = m_player.getHeading();
     player["pitch"] = m_player.getPitch();
     player["health"] = m_player.getHealth();
+
+    for (int i = 0; i < 10; i++)
+    {
+        BlockContainer container = m_player.getInventorySlot(i);
+        player["inventory"][i]["type"] = container.type;
+        player["inventory"][i]["count"] = container.count;
+    }
+
     world["player"] = player;
 
-    for (auto it : this->m_chunks)
+    for (auto& it : this->m_chunks)
     {
         auto chunk = it.second;
         json chunkJson = chunk->getJson();
