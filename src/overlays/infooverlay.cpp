@@ -5,6 +5,7 @@
 #include "infooverlay.h"
 #include "blocky.h"
 #include "world.h"
+#include "entity.h"
 
 using namespace Geek;
 using namespace Geek::Gfx;

@@ -3,36 +3,20 @@
 //
 
 #include "player.h"
+#include "entity.h"
 
 using namespace Geek;
 
 static BlockContainer g_nullContainer;
 
-Player::Player()
+Player::Player(World* world) : Entity(world)
 {
-    m_position.set(0, 16.0, 0);
-
     int i;
     for (i = 0; i < 10; i++)
     {
         m_inventory[i].type = EMPTY;
+        m_inventory[i].count = 0;
     }
-}
-
-Player::~Player()
-{
-
-}
-
-Matrix4 Player::getMatrix() const
-{
-    Matrix4 matrix;
-
-    matrix.identity();
-    matrix.rotateY(m_heading);   // heading
-    matrix.rotateX(m_pitch);   // pitch
-
-    return matrix;
 }
 
 BlockContainer& Player::getInventoryByBlockType(BlockType type)

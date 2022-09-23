@@ -37,7 +37,7 @@ class Model
 
     virtual Side hit(const Geek::Vector& pos, Ray* ray) = 0;
 
-    void draw();
+    void draw() const;
 };
 
 class BlockModel : public Model

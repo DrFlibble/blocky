@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "blocky.h"
 #include "ray.h"
+#include "entity.h"
 
 using namespace std;
 using namespace Geek;
@@ -205,27 +206,28 @@ void Blocky::drawChunk(Chunk* chunk)
 
 bool Blocky::handleEvent(SDL_Event* event)
 {
+    Player& player = m_world->getPlayer();
     if (event->type == SDL_KEYDOWN)
     {
         if (event->key.keysym.sym == SDLK_w)
         {
-            m_world->getPlayer().setForward(0.2f);
+            player.setForward(0.2f);
         }
         else if (event->key.keysym.sym == SDLK_s)
         {
-            m_world->getPlayer().setForward(-0.2f);
+            player.setForward(-0.2f);
         }
         else if (event->key.keysym.sym == SDLK_a)
         {
-            m_world->getPlayer().setStrafe(-0.2f);
+            player.setStrafe(-0.2f);
         }
         else if (event->key.keysym.sym == SDLK_d)
         {
-            m_world->getPlayer().setStrafe(0.2f);
+            player.setStrafe(0.2f);
         }
-        else if (m_world->getPlayer().getJump() <= 0 && event->key.keysym.sym == SDLK_SPACE)
+        else if (player.getJump() <= 0 && event->key.keysym.sym == SDLK_SPACE)
         {
-            m_world->getPlayer().setJump(1.0f);
+            player.setJump(1.0f);
         }
     }
     else if (event->type == SDL_KEYUP)
@@ -233,11 +235,11 @@ bool Blocky::handleEvent(SDL_Event* event)
         int sym = event->key.keysym.sym;
         if (sym >= SDLK_1 && sym <= SDLK_9)
         {
-            m_world->getPlayer().setInventorySlot(sym - SDLK_1);
+            player.setInventorySlot(sym - SDLK_1);
         }
         else if (sym == SDLK_0)
         {
-            m_world->getPlayer().setInventorySlot(9);
+            player.setInventorySlot(9);
         }
         else if (sym == SDLK_ESCAPE)
         {
@@ -248,8 +250,8 @@ bool Blocky::handleEvent(SDL_Event* event)
     }
     else if (m_moveMode && event->type == SDL_MOUSEMOTION)
     {
-        float heading = m_world->getPlayer().getHeading();
-        float pitch = m_world->getPlayer().getPitch();
+        float heading = player.getHeading();
+        float pitch = player.getPitch();
         heading += (float) (event->motion.xrel) * 0.1f;
         pitch += (float) (event->motion.yrel) * 0.1f;
         if (pitch > 90.0)
@@ -260,8 +262,8 @@ bool Blocky::handleEvent(SDL_Event* event)
         {
             pitch = -90.0;
         }
-        m_world->getPlayer().setHeading(heading);
-        m_world->getPlayer().setPitch(pitch);
+        player.setHeading(heading);
+        player.setPitch(pitch);
     }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
@@ -274,7 +276,7 @@ bool Blocky::handleEvent(SDL_Event* event)
                 if (brokenBlock != nullptr)
                 {
                     log(DEBUG, "handleEvent: Broken block: type=%d", brokenBlock->getType());
-                    m_world->getPlayer().addBlockToInventory(brokenBlock->getType());
+                    player.addBlockToInventory(brokenBlock->getType());
                 }
                 m_world->setBlock(m_lookingAtPos, nullptr, true);
                 calcLookAt();
@@ -316,8 +318,8 @@ bool Blocky::handleEvent(SDL_Event* event)
                     block);
                 if (block == nullptr)
                 {
-                    BlockContainer& container = m_world->getPlayer().getInventorySlot(
-                    m_world->getPlayer().getInventorySlot());
+                    BlockContainer& container = player.getInventorySlot(
+                    player.getInventorySlot());
                     if (container.type != EMPTY && container.count > 0)
                     {
                         m_world->setBlock(newPos, new Block(container.type), true);
@@ -338,23 +340,27 @@ bool Blocky::handleEvent(SDL_Event* event)
 
 void Blocky::calcLookAt()
 {
+    Player& player = m_world->getPlayer();
+
     // Which direction are we looking at?
-    double xzLen = cos(m_world->getPlayer().getPitch() * (M_PI / 180.0));
+    double xzLen = cos(player.getPitch() * (M_PI / 180.0));
     Vector v;
-    v.x = xzLen * sin(-m_world->getPlayer().getHeading() * (M_PI / 180.0));
-    v.y = sin(m_world->getPlayer().getPitch() * (M_PI / 180.0));
-    v.z = xzLen * cos(m_world->getPlayer().getHeading() * (M_PI / 180.0));
+    v.x = xzLen * sin(-player.getHeading() * (M_PI / 180.0));
+    v.y = sin(player.getPitch() * (M_PI / 180.0));
+    v.z = xzLen * cos(player.getHeading() * (M_PI / 180.0));
     v = -v;
 
-    Vector viewPos = m_world->getPlayer().getPosition();
-    viewPos.y += m_world->getPlayer().getHeight();
+    Vector viewPos = player.getPosition();
+    viewPos.y += player.getHeight();
     Ray ray(viewPos, v);
 
     m_lookingAt = nullptr;
     m_lookingAtSide = NONE;
     Vector last;
-    for (float dist = 0; dist < 10.0; dist += 0.2f)
+
+    for (int i = 0; i < 50; i++)
     {
+        float dist = (float)i * 0.2f;
         Vector rayPos = ray.at(dist);
         rayPos.x = floor(rayPos.x);
         rayPos.y = floor(rayPos.y);
@@ -383,106 +389,9 @@ void Blocky::calcLookAt()
 
 void Blocky::update()
 {
-    double headingSin = sin(m_world->getPlayer().getHeading() * (M_PI / 180.0));
-    double headingCos = cos(m_world->getPlayer().getHeading() * (M_PI / 180.0));
-
-    uint64_t time = SDL_GetTicks();
-    if ((time - m_lastMillis) > (1000 / 60))
+    bool changed = m_world->getPlayer().update();
+    if (changed)
     {
-        Vector origPosition = m_world->getPlayer().getPosition();
-        bool moving =
-            fabs(m_world->getPlayer().getForward()) > EPSILON ||
-            fabs(m_world->getPlayer().getStrafe()) > EPSILON ||
-            m_world->getPlayer().getJump() > 0;
-
-        Vector checkPos = m_world->getPlayer().getPosition();
-        if (moving)
-        {
-            m_world->getPlayer().getPosition().x +=
-                headingSin * m_world->getPlayer().getForward()
-                +
-                headingCos * m_world->getPlayer().getStrafe();
-            m_world->getPlayer().getPosition().z += headingCos * -m_world->getPlayer().getForward() +
-                          headingSin * m_world->getPlayer().getStrafe();
-            checkPos.x +=
-                headingSin * (m_world->getPlayer().getForward()
-                              * 2) +
-                headingCos * (m_world->getPlayer().getStrafe()
-                              * 2);
-            checkPos.z += headingCos * -(m_world->getPlayer().getForward() * 2) +
-                          headingSin * (m_world->getPlayer().getStrafe()
-                                        * 2);
-            m_world->getPlayer().setForward(m_world->getPlayer().getForward() * 0.75f);
-            m_world->getPlayer().setStrafe(m_world->getPlayer().getStrafe() * 0.75f);
-
-            if (m_world->getPlayer().getJump() > 0)
-            {
-                if (m_world->getPlayer().getJump() > 0.5)
-                {
-                    m_world->getPlayer().getPosition().y += 0.2;
-                }
-                else
-                {
-                    m_world->getPlayer().getPosition().y -= 0.2;
-                }
-                m_world->getPlayer().setJump(m_world->getPlayer().getJump() - 0.1);
-            }
-        }
-        m_lastMillis = time;
-
-        bool canMove = true;
-        int playerX = floor(checkPos.x);
-        int playerY = floor(checkPos.y);
-        int playerZ = floor(checkPos.z);
-        Block* nextBlockUnderPlayer = m_world->getBlock(
-            playerX,
-            playerY - 1,
-            playerZ);
-        bool hasBlockUnderPlayer = nextBlockUnderPlayer != nullptr;
-        if (moving)
-        {
-            Block* nextBlockAtPlayer = m_world->getBlock(playerX, playerY, playerZ);
-            Block* nextBlockAbovePlayer = m_world->getBlock(
-                playerX,
-                playerY + 1,
-                playerZ);
-
-            bool hasBlockAtPlayer = nextBlockAtPlayer != nullptr;
-            bool hasBlockAbovePlayer = nextBlockAbovePlayer != nullptr;
-
-            if (hasBlockAbovePlayer)
-            {
-                canMove = false;
-            }
-            else if (hasBlockUnderPlayer && !hasBlockAtPlayer)
-            {
-                canMove = true;
-            }
-            else if (hasBlockAtPlayer)
-            {
-                canMove = true;
-                m_world->getPlayer().getPosition().y++;
-                hasBlockUnderPlayer = true;
-            }
-        }
-
-        if (canMove && !hasBlockUnderPlayer && m_world->getPlayer().getJump() <= 0)
-        {
-            // Falling!
-            if (m_world->getPlayer().getPosition().y > 0)
-            {
-                m_world->getPlayer().getPosition().y -= 1;
-            }
-        }
-
-        if (!canMove)
-        {
-            // Nope! No moving for you!
-            m_world->getPlayer().setPosition(origPosition);
-            m_world->getPlayer().setForward(0.0f);
-            m_world->getPlayer().setStrafe(0.0f);
-        }
-
         calcLookAt();
     }
 }

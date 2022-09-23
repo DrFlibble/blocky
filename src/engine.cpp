@@ -145,7 +145,7 @@ void BlockyEngine::mainLoop()
         uint64_t time = SDL_GetTicks();
         if ((time - fpsMillis) >= 1000)
         {
-            //log(DEBUG, "mainLoop: fps=%d", frames);
+            log(DEBUG, "mainLoop: fps=%d", frames);
             fpsMillis = time;
             frames = 0;
         }

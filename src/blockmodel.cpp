@@ -2,7 +2,6 @@
 //
 
 #include "blockmodel.h"
-#include "blocky.h"
 #include "ray.h"
 
 const double epsilon = std::numeric_limits<double>::epsilon();
@@ -149,10 +148,11 @@ void* BlockModel::getTexCoordPtr() const
 
 static Vector getVertex(int idx)
 {
-    return Vector(
+    return {
         g_cubeVertices[(idx * 3) + 0] + 0.5,
         g_cubeVertices[(idx * 3) + 1] + 0.5,
-        g_cubeVertices[(idx * 3) + 2] + 0.5);
+        g_cubeVertices[(idx * 3) + 2] + 0.5
+    };
 }
 
 Side BlockModel::hit(const Geek::Vector &pos, Ray* ray)
@@ -242,8 +242,7 @@ bool BlockModel::hitTriangle(Vector* vertices, const Vector &pos, Ray* ray, Hit 
     return true;
 }
 
-
-void Model::draw()
+void Model::draw() const
 {
     // activate attribs
     GL(glEnableVertexAttribArray(0));

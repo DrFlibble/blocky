@@ -5,6 +5,7 @@
 #include "statusbar.h"
 #include "blocky.h"
 #include "world.h"
+#include "entity.h"
 
 using namespace Geek;
 using namespace Geek::Gfx;
@@ -32,7 +33,7 @@ void StatusBarOverlay::draw()
 {
     World* world = getBlocky()->getWorld();
     Surface* statusBarSurface = getSurface();
-    statusBarSurface->clear(0xff000000);
+    statusBarSurface->clear(0x00000000);
     int i;
     for (i = 0; i < (int)world->getPlayer().getHealth(); i++)
     {
@@ -53,7 +54,7 @@ void StatusBarOverlay::draw()
         int sbx = 2 + (i * 32);
         if (i == world->getPlayer().getInventorySlot())
         {
-            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xffff0000);
+            statusBarSurface->drawRectFilled(sbx, 18, 32, 32, 0xff0000ff);
         }
         else
         {
@@ -80,22 +81,18 @@ void StatusBarOverlay::draw()
         if (icon != nullptr && container.count > 0)
         {
             statusBarSurface->blit(sbx + 1, 19, icon);
-            wchar_t buf[200];
-            swprintf(buf, 200, L"%d",
-                     container.count);
-            getBlocky()->getFontManager()->write(getBlocky()->getFont(), statusBarSurface, sbx + 2, 20, buf, 0xffffff, true, nullptr);
 
+            int width = 0;
+            wchar_t buf[200];
+            swprintf(buf, 200, L"%d", container.count);
+
+            getBlocky()->getFontManager()->write(getBlocky()->getFont(), nullptr, sbx + 2, 20, buf, 0xffffff, false, &width);
+            statusBarSurface->drawRectFilled(sbx + 2, 20, width, 14, 0x0);
+            getBlocky()->getFontManager()->write(getBlocky()->getFont(), statusBarSurface, sbx + 2, 20, buf, 0xffffff, true, nullptr);
         }
-        /*
-        if (i == 0)
-        {
-        }
-        else if (i == 1)
-        {
-            statusBarSurface->blit(sbx + 1, 19, m_grassIcon);
-        }
-         */
     }
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Overlay::draw(OVERLAY_CENTRE, OVERLAY_END);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 }

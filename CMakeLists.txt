@@ -40,5 +40,5 @@ add_executable(blocky
         src/blocks.h
         src/overlays/crosshair.cpp
         src/overlays/crosshair.h
-        src/overlays/infooverlay.cpp src/overlays/infooverlay.h src/overlays/statusbar.cpp src/overlays/statusbar.h)
+        src/overlays/infooverlay.cpp src/overlays/infooverlay.h src/overlays/statusbar.cpp src/overlays/statusbar.h src/entity.cpp src/entity.h)
 target_link_libraries(blocky ${OPENGL_LIBRARIES} ${sdl2_LDFLAGS} ${libgeek_LDFLAGS} ${nlohmann_json_LDFLAGS})

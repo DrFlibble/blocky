@@ -56,9 +56,6 @@ class Blocky : public BlockyEngine
     GLuint m_skyVAO = 0;
     GLuint m_overlayVAO = 0;
 
-    float m_lastMillis = 0;
-
-
     bool initShaders() override;
     bool initGame() override;
 
