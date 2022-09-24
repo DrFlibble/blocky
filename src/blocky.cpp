@@ -1,6 +1,6 @@
 
 #include "texture.h"
-#include "blockmodel.h"
+#include "models/blockmodel.h"
 #include "world.h"
 #include "shader.h"
 #include "blocky.h"
@@ -37,6 +37,10 @@ bool Blocky::initGame()
     m_grassTexture = new Texture(grassSurface);
     m_stoneTexture = new Texture(stoneSurface);
     m_targetTexture = new Texture("../target-512.png");
+    m_sphereTexture = new Texture("../data/images/sphere.png");
+
+    m_sphereModel = new SphereModel();
+    m_sphereModel->init();
 
     return true;
 }
@@ -102,10 +106,6 @@ void Blocky::drawFrame()
 {
     m_matrixModelView = m_world->getPlayer().getMatrix();
 
-    int drawDistance = 2;
-    int playerChunkX = CHUNK_NUM((int) m_world->getPlayer().getPosition().x);
-    int playerChunkZ = CHUNK_NUM((int) m_world->getPlayer().getPosition().z);
-
     // Sky
     m_skyProgram->use();
     float time = (float) SDL_GetTicks() / 500.0f;
@@ -114,6 +114,9 @@ void Blocky::drawFrame()
     glBindVertexArray(m_skyVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+    int drawDistance = 2;
+    int playerChunkX = CHUNK_NUM((int) m_world->getPlayer().getPosition().x);
+    int playerChunkZ = CHUNK_NUM((int) m_world->getPlayer().getPosition().z);
     m_mainProgram->use();
     m_blockModel->bind();
     for (int x = -drawDistance; x <= drawDistance; x++)
@@ -124,6 +127,12 @@ void Blocky::drawFrame()
             drawChunk(chunk);
         }
     }
+
+    drawMobs();
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
     glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -138,6 +147,42 @@ void Blocky::drawFrame()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_BLEND);
+}
+
+void Blocky::drawMobs()
+{
+    m_sphereTexture->bind();
+    m_sphereModel->bind();
+
+    for (SphereMob* mob : m_world->getMobs())
+    {
+        Matrix4 matrix;
+        float offset = 0;//+0.5f;
+        Vector pos = m_world->getPlayer().getPosition();
+        double viewY = pos.y + m_world->getPlayer().getHeight() - 0.5;
+        //matrix.rotateY(-m_world->getPlayer().getHeading());   // heading
+//matrix.rotateX(m_world->getPlayer().getPitch());   // pitch
+        matrix.rotateX(-90);
+        matrix.rotateY(-mob->getHeading() - 90);
+        matrix.translate(
+            -pos.x + offset + mob->getPosition().x,
+            ((float) mob->getPosition().y - viewY),
+            -pos.z + offset + mob->getPosition().z);
+        matrix.rotateY(m_world->getPlayer().getHeading());   // heading
+        matrix.rotateX(m_world->getPlayer().getPitch());   // pitch
+
+        Matrix4 matrixModelViewProjection = m_matrixProjection * matrix;
+        Matrix4 matrixNormal;// = matrix;
+        float c[] = {0, 0, 0, 1};
+        matrixNormal.setColumn(3, c);
+
+        Matrix4 modelView;
+        modelView.rotateY(-m_world->getPlayer().getHeading());   // heading
+        modelView.rotateX(-m_world->getPlayer().getPitch());   // pitch
+
+        m_mainProgram->setMatrices(modelView, matrixModelViewProjection, matrixNormal, false);
+        m_sphereModel->draw();
+    }
 }
 
 void Blocky::drawChunk(Chunk* chunk)
@@ -389,7 +434,7 @@ void Blocky::calcLookAt()
 
 void Blocky::update()
 {
-    bool changed = m_world->getPlayer().update();
+    bool changed = m_world->update();
     if (changed)
     {
         calcLookAt();

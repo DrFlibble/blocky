@@ -20,7 +20,7 @@ add_definitions(${libgeek_CFLAGS} ${sdl2_CFLAGS} -DGL_SILENCE_DEPRECATION -DGL_D
 add_executable(blocky
         src/main.cpp
         src/texture.cpp
-        src/blockmodel.cpp
+        src/models/blockmodel.cpp
         src/chunk.cpp
         src/world.cpp
         src/perlin.cpp
@@ -38,7 +38,15 @@ add_executable(blocky
         src/player.cpp
         src/player.h
         src/blocks.h
+        src/models/model.cpp
+        src/models/model.h
         src/overlays/crosshair.cpp
         src/overlays/crosshair.h
-        src/overlays/infooverlay.cpp src/overlays/infooverlay.h src/overlays/statusbar.cpp src/overlays/statusbar.h src/entity.cpp src/entity.h)
+        src/overlays/infooverlay.cpp
+        src/overlays/infooverlay.h
+        src/overlays/statusbar.cpp
+        src/overlays/statusbar.h
+        src/entity.cpp
+        src/entity.h
+        src/models/spheremodel.cpp src/models/spheremodel.h src/spheremob.cpp src/spheremob.h)
 target_link_libraries(blocky ${OPENGL_LIBRARIES} ${sdl2_LDFLAGS} ${libgeek_LDFLAGS} ${nlohmann_json_LDFLAGS})

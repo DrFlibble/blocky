@@ -11,12 +11,14 @@
 #include <geek/core-matrix.h>
 #include <geek/gfx-surface.h>
 
-#include "blockmodel.h"
+#include "models/blockmodel.h"
 #include "engine.h"
 #include "player.h"
 #include "overlays/crosshair.h"
 #include "overlays/infooverlay.h"
 #include "overlays/statusbar.h"
+#include "models/spheremodel.h"
+#include "spheremob.h"
 
 class World;
 class Texture;
@@ -33,7 +35,6 @@ class Blocky : public BlockyEngine
  private:
     Model* m_blockModel = nullptr;
 
-
     Block* m_lookingAt = nullptr;
     Side m_lookingAtSide = NONE;
     Geek::Vector m_lookingAtPos;
@@ -46,12 +47,14 @@ class Blocky : public BlockyEngine
     Texture* m_grassTexture = nullptr;
     Texture* m_stoneTexture = nullptr;
     Texture* m_targetTexture = nullptr;
+    Texture* m_sphereTexture = nullptr;
 
     CrossHairOverlay* m_crossHairOverlay = nullptr;
     InfoOverlay* m_infoOverlay = nullptr;
     StatusBarOverlay* m_statusBarOverlay = nullptr;
 
     World* m_world = nullptr;
+    SphereModel* m_sphereModel = nullptr;
 
     GLuint m_skyVAO = 0;
     GLuint m_overlayVAO = 0;
@@ -63,6 +66,7 @@ class Blocky : public BlockyEngine
     void drawBox(const Geek::Matrix4& matrix, bool highlight);
 
     void calcLookAt();
+
  public:
     Blocky();
     ~Blocky() override;
@@ -82,6 +86,8 @@ class Blocky : public BlockyEngine
 
     Block* getLookingAt() { return m_lookingAt; }
     Geek::Vector getLookingAtPos() { return m_lookingAtPos; }
+
+    void drawMobs();
 };
 
 #endif //BLOCKY_BLOCKY_H

@@ -110,18 +110,19 @@ bool BlockModel::init()
     GL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(g_cubeVertices), sizeof(g_cubeNormals), g_cubeNormals));
     // copy texture coords after g_cubeNormals
     GL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(g_cubeVertices) + sizeof(g_cubeNormals), sizeof(g_cubeTexCoords), g_cubeTexCoords));
-    GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
     GL(glGenBuffers(1, &m_cubeIBO));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_cubeIBO));
     GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_cubeIndices), g_cubeIndices, GL_STATIC_DRAW));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
     glGenVertexArrays(1, &m_cubeVAO);
 
     glBindVertexArray(m_cubeVAO);
     GL(glBindBuffer(GL_ARRAY_BUFFER, m_cubeVBO));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_cubeIBO));
+    glBindVertexArray(0);
+    GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
     return true;
 }
@@ -129,6 +130,8 @@ bool BlockModel::init()
 void BlockModel::bind() const
 {
     glBindVertexArray(m_cubeVAO);
+    GL(glBindBuffer(GL_ARRAY_BUFFER, m_cubeVBO));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_cubeIBO));
 }
 
 void* BlockModel::getPositionPtr() const
@@ -240,23 +243,4 @@ bool BlockModel::hitTriangle(Vector* vertices, const Vector &pos, Ray* ray, Hit 
      */
 
     return true;
-}
-
-void Model::draw() const
-{
-    // activate attribs
-    GL(glEnableVertexAttribArray(0));
-    GL(glEnableVertexAttribArray(1));
-    GL(glEnableVertexAttribArray(2));
-
-    GL(glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, getPositionPtr()));
-    GL(glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, getNormalPtr()));
-    GL(glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, getTexCoordPtr()));
-
-    GL(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr));
-
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);//attribVertexNormal);
-    glDisableVertexAttribArray(2);//attribVertexTexCoord);
-
 }

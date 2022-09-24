@@ -162,3 +162,53 @@ void World::save()
     Data* data = new Data((char*)bson.data(), bson.size());
     data->writeCompressed("test.world", DataCompression::GZIP);
 }
+
+float mobpos(float player, float r)
+{
+    if (r < 0)
+    {
+        r -= 5;
+    }
+    else
+    {
+        r += 5;
+    }
+    return player + r;
+}
+
+bool World::update()
+{
+    bool changed = m_player.update();
+
+    int r = m_random->range(0, 100);
+    if (r == 1)
+    {
+        SphereMob* newMob = new SphereMob(this);
+        Vector v(
+            mobpos(m_player.getPosition().x, m_random->ranged(-10, 10)),
+            mobpos(m_player.getPosition().y, m_random->ranged(-10, 10)),
+            mobpos(m_player.getPosition().z, m_random->ranged(-10, 10)));
+        newMob->setPosition(v);
+        m_mobs.push_back(newMob);
+    }
+
+    for (SphereMob* mob : m_mobs)
+    {
+        r = m_random->range(0, 10);
+        if (r == 1)
+        {
+            mob->setHeading(mob->getHeading() + 45);
+        }
+        else if (r == 2)
+        {
+            mob->setHeading(mob->getHeading() - 45);
+        }
+        else if (r == 3)
+        {
+            mob->setForward(0.1f);
+        }
+        mob->update();
+    }
+
+    return changed;
+}

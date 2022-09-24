@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <geek/core-logger.h>
 #include <geek/core-maths.h>
@@ -14,6 +15,7 @@
 #include "chunk.h"
 #include "perlin.h"
 #include "player.h"
+#include "spheremob.h"
 
 class Chunk;
 class Block;
@@ -28,6 +30,8 @@ class World : private Geek::Logger
     uint64_t m_seed;
     std::map<std::string, Chunk*> m_chunks;
     PerlinNoise* m_perlin = nullptr;
+
+    std::vector<SphereMob*> m_mobs;
 
     Player m_player;
 
@@ -47,6 +51,10 @@ class World : private Geek::Logger
 
     void load();
     void save();
+
+    bool update();
+
+    std::vector<SphereMob*> getMobs() { return m_mobs; }
 };
 
 #endif //BLOCKY_WORLD_H

@@ -57,42 +57,42 @@ bool Entity::update()
         m_lastMillis = time;
 
         bool canMove = true;
-        int playerX = floor(checkPos.x);
-        int playerY = floor(checkPos.y);
-        int playerZ = floor(checkPos.z);
-        Block* nextBlockUnderPlayer = m_world->getBlock(
-            playerX,
-            playerY - 1,
-            playerZ);
-        bool hasBlockUnderPlayer = nextBlockUnderPlayer != nullptr;
+        int entityX = floor(checkPos.x);
+        int entityY = floor(checkPos.y);
+        int entityZ = floor(checkPos.z);
+        Block* nextBlockUnderEntity = m_world->getBlock(
+            entityX,
+            entityY - 1,
+            entityZ);
+        bool hasBlockUnderEntity = nextBlockUnderEntity != nullptr;
         if (moving)
         {
-            Block* nextBlockAtPlayer = m_world->getBlock(playerX, playerY, playerZ);
-            Block* nextBlockAbovePlayer = m_world->getBlock(
-                playerX,
-                playerY + 1,
-                playerZ);
+            Block* nextBlockAtEntity = m_world->getBlock(entityX, entityY, entityZ);
+            Block* nextBlockAboveEntity = m_world->getBlock(
+                entityX,
+                entityY + 1,
+                entityZ);
 
-            bool hasBlockAtPlayer = nextBlockAtPlayer != nullptr;
-            bool hasBlockAbovePlayer = nextBlockAbovePlayer != nullptr;
+            bool hasBlockAtEntity = nextBlockAtEntity != nullptr;
+            bool hasBlockAboveEntity = nextBlockAboveEntity != nullptr;
 
-            if (hasBlockAbovePlayer)
+            if (hasBlockAboveEntity)
             {
                 canMove = false;
             }
-            else if (hasBlockUnderPlayer && !hasBlockAtPlayer)
+            else if (hasBlockUnderEntity && !hasBlockAtEntity)
             {
                 canMove = true;
             }
-            else if (hasBlockAtPlayer)
+            else if (hasBlockAtEntity)
             {
                 canMove = true;
                 m_position.y++;
-                hasBlockUnderPlayer = true;
+                hasBlockUnderEntity = true;
             }
         }
 
-        if (canMove && !hasBlockUnderPlayer && m_jump <= 0)
+        if (canMove && !hasBlockUnderEntity && m_jump <= 0)
         {
             // Falling!
             if (m_position.y > 0)
