@@ -18,12 +18,17 @@ BlockyEngine::~BlockyEngine()
     {
         SDL_GL_DeleteContext(m_context);
     }
+
+    if (m_controller != nullptr)
+    {
+        SDL_GameControllerClose(m_controller);
+    }
 }
 
 bool BlockyEngine::init()
 {
     int res;
-    res = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    res = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
     if (res < 0)
     {
         log(ERROR, "Failed to initialise SDL!");
@@ -78,6 +83,19 @@ bool BlockyEngine::init()
     m_fontManager->init();
     m_fontManager->scan("../data/fonts");
     m_font = m_fontManager->openFont("Lato", "Regular", 12);
+
+    int numJoysticks = SDL_NumJoysticks();
+    for (int i = 0; i < numJoysticks; i++)
+    {
+        if (SDL_IsGameController(i))
+        {
+            m_controller = SDL_GameControllerOpen(i);
+
+            log(DEBUG, "init: Joystick %d: controller=%p", i, m_controller);
+            break;
+        }
+    }
+
 
     return true;
 }

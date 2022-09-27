@@ -45,11 +45,11 @@ bool Entity::update()
             {
                 if (m_jump > 0.5)
                 {
-                    m_position.y += 0.2;
+                    m_position.y += 0.4;
                 }
                 else
                 {
-                    m_position.y -= 0.2;
+                    m_position.y -= 0.4;
                 }
                 m_jump -= 0.1;
             }
@@ -107,6 +107,11 @@ bool Entity::update()
             m_position = origPosition;
             m_forward = 0.0;
             m_strafe = 0.0;
+        }
+
+        if (m_position.y <= 1)
+        {
+            m_position.y = 1;
         }
 
         changed = true;

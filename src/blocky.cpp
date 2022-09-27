@@ -312,66 +312,21 @@ bool Blocky::handleEvent(SDL_Event* event)
     }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
-        if (m_moveMode && m_lookingAt != nullptr && m_lookingAtPos.y >= 0)
+        if (m_moveMode && m_lookingAtMob != nullptr)
+        {
+            log(DEBUG, "You hit a mob! How rude!");
+        }
+        else if (m_moveMode && m_lookingAt != nullptr && m_lookingAtPos.y >= 0)
         {
             SDL_Keymod keyMod = SDL_GetModState();
             if (event->button.button == SDL_BUTTON_LEFT && (keyMod & KMOD_CTRL) == 0)
             {
-                Block* brokenBlock = m_world->getBlock(m_lookingAtPos);
-                if (brokenBlock != nullptr)
-                {
-                    log(DEBUG, "handleEvent: Broken block: type=%d", brokenBlock->getType());
-                    player.addBlockToInventory(brokenBlock->getType());
-                }
-                m_world->setBlock(m_lookingAtPos, nullptr, true);
-                calcLookAt();
+                breakBlock();
             }
             else if ((event->button.button == SDL_BUTTON_LEFT && !!(keyMod & KMOD_CTRL)) ||
                 event->button.button == SDL_BUTTON_RIGHT)
             {
-                Vector newPos = m_lookingAtPos;
-                switch (m_lookingAtSide)
-                {
-                    case X_NEG:
-                        newPos.x--;
-                        break;
-                    case X_POS:
-                        newPos.x++;
-                        break;
-                    case Y_NEG:
-                        newPos.y--;
-                        break;
-                    case Y_POS:
-                        newPos.y++;
-                        break;
-                    case Z_NEG:
-                        newPos.z--;
-                        break;
-                    case Z_POS:
-                        newPos.z++;
-                        break;
-                    default:
-                        log(DEBUG, "mainLoop: Place Block: invalid face: %d", m_lookingAtSide);
-                        return true;
-                }
-                Block* block = m_world->getBlock(newPos);
-                log(
-                    DEBUG, "mainLoop: Place Block: lookingAt=%d, %d, %d, side=%d, newPos=%d, %d, %d: block=%p",
-                    (int) m_lookingAtPos.x, (int) m_lookingAtPos.y, (int) m_lookingAtPos.z,
-                    m_lookingAtSide,
-                    (int) newPos.x, (int) newPos.y, (int) newPos.z,
-                    block);
-                if (block == nullptr)
-                {
-                    BlockContainer& container = player.getInventorySlot(
-                    player.getInventorySlot());
-                    if (container.type != EMPTY && container.count > 0)
-                    {
-                        m_world->setBlock(newPos, new Block(container.type), true);
-                        container.count--;
-                        calcLookAt();
-                    }
-                }
+                placeBlock();
             }
         }
         else if (!m_moveMode)
@@ -380,7 +335,127 @@ bool Blocky::handleEvent(SDL_Event* event)
             m_moveMode = true;
         }
     }
+    else if (event->type == SDL_CONTROLLERAXISMOTION)
+    {
+        float pct = (float)event->caxis.value / (float)0x7fff;
+        if (fabs(pct) < 0.5)
+        {
+            pct = 0;
+        }
+
+        log(DEBUG, "handleEvent: Controller Axis: axis=%d, value=%d, pct=%0.2f%%",
+            event->caxis.axis,
+            event->caxis.value,
+            pct * 100.0f);
+
+        if (event->caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
+        {
+            m_controllerForward = -pct;
+        }
+        if (event->caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
+        {
+            m_controllerStrafe = pct;
+        }
+        else if (event->caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
+        {
+            m_controllerHeading = pct;
+        }
+        else if (event->caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
+        {
+            m_controllerPitch = pct;
+        }
+    }
+    else if (event->type == SDL_CONTROLLERBUTTONDOWN)
+    {
+        log(DEBUG, "handleEvent: Controller Button: type=%d, button=%d",
+            event->cbutton.type,
+            event->cbutton.button);
+        if (event->cbutton.button == SDL_CONTROLLER_BUTTON_LEFTSHOULDER)
+        {
+            placeBlock();
+        }
+        else if (event->cbutton.button == SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)
+        {
+            breakBlock();
+            if (m_controller != nullptr)
+            {
+                SDL_GameControllerRumble(
+                    m_controller,
+                    0xFFFF * 3 / 4,
+                    0xFFFF * 3 / 4,
+                    250 );
+            }
+        }
+        else if (player.getJump() <= 0 && event->cbutton.button == SDL_CONTROLLER_BUTTON_A)
+        {
+            player.setJump(1.0f);
+        }
+    }
+
     return true;
+}
+
+void Blocky::breakBlock()
+{
+    Player& player = m_world->getPlayer();
+    Block* brokenBlock = m_world->getBlock(m_lookingAtPos);
+    if (brokenBlock != nullptr)
+    {
+        log(DEBUG, "handleEvent: Broken block: type=%d", brokenBlock->getType());
+        player.addBlockToInventory(brokenBlock->getType());
+    }
+    m_world->setBlock(m_lookingAtPos, nullptr, true);
+    calcLookAt();
+}
+
+void Blocky::placeBlock()
+{
+    Player& player = m_world->getPlayer();
+
+    Vector newPos = m_lookingAtPos;
+    switch (m_lookingAtSide)
+    {
+        case X_NEG:
+            newPos.x--;
+            break;
+        case X_POS:
+            newPos.x++;
+            break;
+        case Y_NEG:
+            newPos.y--;
+            break;
+        case Y_POS:
+            newPos.y++;
+            break;
+        case Z_NEG:
+            newPos.z--;
+            break;
+        case Z_POS:
+            newPos.z++;
+            break;
+        default:
+            log(DEBUG, "mainLoop: Place Block: invalid face: %d", m_lookingAtSide);
+            return;
+    }
+    Block* block = m_world->getBlock(newPos);
+    log(
+        DEBUG, "mainLoop: Place Block: lookingAt=%d, %d, %d, side=%d, newPos=%d, %d, %d: block=%p",
+        (int) m_lookingAtPos.x, (int) m_lookingAtPos.y, (int) m_lookingAtPos.z,
+        m_lookingAtSide,
+        (int) newPos.x, (int) newPos.y, (int) newPos.z,
+        block);
+
+    if (block == nullptr)
+    {
+        BlockContainer& container = player.getInventorySlot(
+            player.getInventorySlot());
+        if (container.type != EMPTY && container.count > 0)
+        {
+            m_world->setBlock(newPos, new Block(container.type), true);
+            container.count--;
+            calcLookAt();
+        }
+    }
 }
 
 void Blocky::calcLookAt()
@@ -401,6 +476,7 @@ void Blocky::calcLookAt()
 
     m_lookingAt = nullptr;
     m_lookingAtSide = NONE;
+    m_lookingAtMob = nullptr;
     Vector last;
 
     for (int i = 0; i < 50; i++)
@@ -418,6 +494,21 @@ void Blocky::calcLookAt()
         }
         last = rayPos;
 
+        if (m_lookingAtMob == nullptr)
+        {
+            for (SphereMob* mob: m_world->getMobs())
+            {
+                if (floor(mob->getPosition().x) == rayPos.x &&
+                    floor(mob->getPosition().y) == rayPos.y &&
+                    floor(mob->getPosition().z) == rayPos.z)
+                {
+                    log(DEBUG, "calcLookAt: Looking at a mob!");
+                    m_lookingAtMob = mob;
+                    break;
+                }
+            }
+        }
+
         Block* block = m_world->getBlock(rayPos);
         if (block != nullptr && block->isVisible())
         {
@@ -434,6 +525,23 @@ void Blocky::calcLookAt()
 
 void Blocky::update()
 {
+    if (fabs(m_controllerForward) > EPSILON)
+    {
+        m_world->getPlayer().setForward(0.2 * m_controllerForward);
+    }
+    if (fabs(m_controllerStrafe) > EPSILON)
+    {
+        m_world->getPlayer().setStrafe(0.2 * m_controllerStrafe);
+    }
+    if (fabs(m_controllerHeading) > EPSILON)
+    {
+        m_world->getPlayer().setHeading(m_world->getPlayer().getHeading() + (4.0 * m_controllerHeading));
+    }
+    if (fabs(m_controllerPitch) > EPSILON)
+    {
+        m_world->getPlayer().setPitch(m_world->getPlayer().getPitch() + (3.0 * m_controllerPitch));
+    }
+
     bool changed = m_world->update();
     if (changed)
     {

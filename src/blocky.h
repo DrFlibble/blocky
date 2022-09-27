@@ -37,6 +37,7 @@ class Blocky : public BlockyEngine
 
     Block* m_lookingAt = nullptr;
     Side m_lookingAtSide = NONE;
+    SphereMob* m_lookingAtMob = nullptr;
     Geek::Vector m_lookingAtPos;
 
     MainShader* m_mainProgram = nullptr;
@@ -58,6 +59,11 @@ class Blocky : public BlockyEngine
 
     GLuint m_skyVAO = 0;
     GLuint m_overlayVAO = 0;
+
+    float m_controllerForward = 0.0;
+    float m_controllerStrafe = 0.0;
+    float m_controllerHeading = 0.0;
+    float m_controllerPitch = 0.0;
 
     bool initShaders() override;
     bool initGame() override;
@@ -88,6 +94,9 @@ class Blocky : public BlockyEngine
     Geek::Vector getLookingAtPos() { return m_lookingAtPos; }
 
     void drawMobs();
+
+    void breakBlock();
+    void placeBlock();
 };
 
 #endif //BLOCKY_BLOCKY_H

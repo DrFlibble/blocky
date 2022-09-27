@@ -72,6 +72,8 @@ class BlockyEngine : protected Geek::Logger
     Geek::FontManager* m_fontManager = nullptr;
     Geek::FontHandle* m_font = nullptr;
 
+    SDL_GameController* m_controller = nullptr;
+
     virtual bool initShaders() = 0;
     virtual bool initGame() = 0;
     virtual bool handleEvent(SDL_Event* event) = 0;
