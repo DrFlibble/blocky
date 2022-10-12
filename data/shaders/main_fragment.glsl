@@ -1,24 +1,21 @@
-#version 400
-#extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
+// GLSL version
+#version 330
 
 //#extension GL_OES_standard_derivatives : enable
 
 // uniforms
-layout (std140, binding=0) uniform bufferVals {
-    mat4 lightPosition; // should be in the eye space
-    vec4 lightAmbient;              // light ambient color
-    vec4 lightDiffuse;              // light diffuse color
-    vec4 lightSpecular;             // light specular color
-    int highlight;
-} lightInfo;
-layout (binding=1) uniform sampler2D map0;                 // texture map 
+uniform vec4 lightPosition;             // should be in the eye space
+uniform vec4 lightAmbient;              // light ambient color
+uniform vec4 lightDiffuse;              // light diffuse color
+uniform vec4 lightSpecular;             // light specular color
+uniform sampler2D map0;                 // texture map #1
+uniform int highlight;
 
-layout (location=0) in vec3 esVertex;
-layout (location=1) in vec3 esNormal;
-layout (location=2) in vec2 texCoord0;
+in vec3 esVertex;
+in vec3 esNormal;
+in vec2 texCoord0;
 
-layout (location=3) out vec4 outColour;
+out vec4 outColour;
 
 float gridFactor (float parameter, float width, float feather) {
     float w1 = width - feather * 0.5;
@@ -99,13 +96,13 @@ void main()
 {
     vec3 normal = normalize(esNormal);
     vec3 light;
-    if (lightInfo.lightPosition.w == vec3(0.0, 0.0, 0.0))
+    if(lightPosition.w == 0.0)
     {
-        light = normalize(lightInfo.lightPosition.xyz);
+        light = normalize(lightPosition.xyz);
     }
     else
     {
-        light = normalize(lightInfo.lightPosition.xyz - esVertex);
+        light = normalize(lightPosition.xyz - esVertex);
     }
     vec3 view = normalize(-esVertex);
     vec3 halfv = normalize(light + view);

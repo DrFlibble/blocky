@@ -115,13 +115,13 @@ bool MainShader::load()
 {
     bool res;
 
-    res = ShaderProgram::load(GL_VERTEX_SHADER, "../data/shaders/main_vertex.shader");
+    res = ShaderProgram::load(GL_VERTEX_SHADER, "../data/shaders/main_vertex.glsl");
     if (!res)
     {
         return false;
     }
 
-    res = ShaderProgram::load(GL_FRAGMENT_SHADER, "../data/shaders/main_fragment.shader");
+    res = ShaderProgram::load(GL_FRAGMENT_SHADER, "../data/shaders/main_fragment.glsl");
     if (!res)
     {
         return false;
