@@ -13,7 +13,7 @@ class InfoOverlay : public Overlay
     explicit InfoOverlay(Blocky* blocky);
     ~InfoOverlay() = default;
 
-    void draw();
+    void draw() override;
 };
 
 

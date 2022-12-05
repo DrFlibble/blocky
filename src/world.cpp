@@ -25,7 +25,7 @@ World::~World() = default;
 Chunk* World::getChunk(int x, int z)
 {
     char chunkId[1024];
-    sprintf(chunkId, "%d:0:%d", x, z);
+    snprintf(chunkId, 1024, "%d:0:%d", x, z);
 
     Chunk* chunk;
     auto it = m_chunks.find(chunkId);
@@ -105,7 +105,7 @@ void World::load()
         chunk->fromJson(chunkJson);
 
         char chunkId[1024];
-        sprintf(chunkId, "%d:0:%d", chunk->getChunkX(), chunk->getChunkZ());
+        snprintf(chunkId, 1024, "%d:0:%d", chunk->getChunkX(), chunk->getChunkZ());
         m_chunks.insert(make_pair(chunkId, chunk));
     }
 

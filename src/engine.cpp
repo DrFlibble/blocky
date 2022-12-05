@@ -2,6 +2,7 @@
 //
 
 #include "engine.h"
+#include "overlay.h"
 
 using namespace std;
 using namespace Geek;
@@ -76,6 +77,7 @@ bool BlockyEngine::init()
     res = initGame();
     if (!res)
     {
+        log(DEBUG, "Failed to initialise game");
         return false;
     }
 
@@ -95,7 +97,6 @@ bool BlockyEngine::init()
             break;
         }
     }
-
 
     return true;
 }
@@ -195,4 +196,25 @@ void BlockyEngine::releaseMouse()
     SDL_CaptureMouse(SDL_FALSE);
     SDL_ShowCursor(SDL_TRUE);
     SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+void BlockyEngine::drawOverlays()
+{
+    glDisable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    for (Overlay* overlay : m_overlays)
+    {
+        if (overlay->isVisible())
+        {
+            overlay->draw();
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_BLEND);
 }

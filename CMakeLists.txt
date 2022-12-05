@@ -5,6 +5,7 @@ include(FindOpenGL)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libgeek REQUIRED libgeek)
+pkg_check_modules(libfrontier REQUIRED libfrontier)
 pkg_check_modules(sdl2 sdl2)
 pkg_check_modules(nlohmann_json nlohmann_json)
 
@@ -16,7 +17,13 @@ SET(CMAKE_CXX_FLAGS_RELEASE  "${FLAGS_COMMON} -O3")
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-add_definitions(${libgeek_CFLAGS} ${sdl2_CFLAGS} -DGL_SILENCE_DEPRECATION -DGL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED ${nlohmann_json_CFLAGS})
+add_definitions(
+        ${libgeek_CFLAGS}
+        ${libfrontier_CFLAGS}
+        ${sdl2_CFLAGS}
+        ${nlohmann_json_CFLAGS}
+        -DGL_SILENCE_DEPRECATION -DGL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+)
 add_executable(blocky
         src/main.cpp
         src/texture.cpp
@@ -48,5 +55,16 @@ add_executable(blocky
         src/overlays/statusbar.h
         src/entity.cpp
         src/entity.h
-        src/models/spheremodel.cpp src/models/spheremodel.h src/spheremob.cpp src/spheremob.h)
-target_link_libraries(blocky ${OPENGL_LIBRARIES} ${sdl2_LDFLAGS} ${libgeek_LDFLAGS} ${nlohmann_json_LDFLAGS})
+        src/models/spheremodel.cpp
+        src/models/spheremodel.h
+        src/spheremob.cpp
+        src/spheremob.h
+        src/overlays/menu.cpp
+        src/overlays/menu.h)
+target_link_libraries(
+        blocky
+        ${OPENGL_LIBRARIES}
+        ${sdl2_LDFLAGS}
+        ${libgeek_LDFLAGS}
+        ${libfrontier_LDFLAGS}
+        ${nlohmann_json_LDFLAGS})

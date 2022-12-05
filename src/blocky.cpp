@@ -1,4 +1,3 @@
-
 #include "texture.h"
 #include "models/blockmodel.h"
 #include "world.h"
@@ -7,12 +6,16 @@
 #include "ray.h"
 #include "entity.h"
 
+#include <frontier/engines/windowing.h>
+
 using namespace std;
 using namespace Geek;
 using namespace Geek::Gfx;
+using namespace Frontier;
 
 Blocky::Blocky() : BlockyEngine("Blocky")
 {
+    m_blockyApp = new BlockyApp();
     m_world = new World();
 }
 
@@ -20,6 +23,11 @@ Blocky::~Blocky() = default;
 
 bool Blocky::initGame()
 {
+    if (!m_blockyApp->init())
+    {
+        return false;
+    }
+
     glGenVertexArrays(1, &m_overlayVAO);
     glGenVertexArrays(1, &m_skyVAO);
 
@@ -42,6 +50,18 @@ bool Blocky::initGame()
     m_sphereModel = new SphereModel();
     m_sphereModel->init();
 
+    m_crossHairOverlay = new CrossHairOverlay(this);
+    m_infoOverlay = new InfoOverlay(this);
+    m_statusBarOverlay = new StatusBarOverlay(this);
+    m_menuOverlay = new MenuOverlay(this);
+    m_menuOverlay->init();
+    m_menuOverlay->setVisible(false);
+
+    addOverlay(m_crossHairOverlay);
+    addOverlay(m_infoOverlay);
+    addOverlay(m_statusBarOverlay);
+    addOverlay(m_menuOverlay);
+
     return true;
 }
 
@@ -55,14 +75,6 @@ bool Blocky::initShaders()
     {
         return false;
     }
-
-    // set uniform values
-    float lightPosition[] = {0, 0, 1, 1};
-    float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1};
-    float lightDiffuse[] = {0.7f, 0.7f, 0.7f, 1};
-    float lightSpecular[] = {1.0f, 1.0f, 1.0f, 1};
-
-    m_mainProgram->setLight(lightPosition, lightAmbient, lightDiffuse, lightSpecular);
 
     m_skyProgram = new SkyShader();
     res = m_skyProgram->load();
@@ -82,10 +94,6 @@ bool Blocky::initShaders()
 
     m_overlayProgram->unuse();
 
-    m_crossHairOverlay = new CrossHairOverlay(this);
-    m_infoOverlay = new InfoOverlay(this);
-    m_statusBarOverlay = new StatusBarOverlay(this);
-
     return true;
 }
 
@@ -94,6 +102,9 @@ void Blocky::drawBox(const Matrix4 &matrix, bool highlight)
     // set matrix uniforms every drawFrame
     Matrix4 matrixModelViewProjection = m_matrixProjection * matrix;
     Matrix4 matrixNormal = matrix;
+
+    matrixNormal.rotateY(m_world->getPlayer().getHeading());   // heading
+    //matrix.rotateX(m_world->getPlayer().getPitch());   // pitch
     float c[] = {0, 0, 0, 1};
     matrixNormal.setColumn(3, c);
 
@@ -118,6 +129,15 @@ void Blocky::drawFrame()
     int playerChunkX = CHUNK_NUM((int) m_world->getPlayer().getPosition().x);
     int playerChunkZ = CHUNK_NUM((int) m_world->getPlayer().getPosition().z);
     m_mainProgram->use();
+
+    // set uniform values
+    float lightPosition[] = {0, 1, 1, 1};
+    float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1};
+    float lightDiffuse[] = {0.7f, 0.7f, 0.7f, 1};
+    float lightSpecular[] = {1.0f, 1.0f, 1.0f, 1};
+
+    m_mainProgram->setLight(lightPosition, lightAmbient, lightDiffuse, lightSpecular);
+
     m_blockModel->bind();
     for (int x = -drawDistance; x <= drawDistance; x++)
     {
@@ -134,19 +154,7 @@ void Blocky::drawFrame()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glDisable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-    m_crossHairOverlay->draw();
-    m_infoOverlay->draw();
-    m_statusBarOverlay->draw();
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDisable(GL_BLEND);
+    drawOverlays();
 }
 
 void Blocky::drawMobs()
@@ -291,6 +299,8 @@ bool Blocky::handleEvent(SDL_Event* event)
             log(DEBUG, "ESCAPE!");
             m_moveMode = false;
             releaseMouse();
+
+            m_menuOverlay->setVisible(true);
         }
     }
     else if (m_moveMode && event->type == SDL_MOUSEMOTION)
@@ -331,8 +341,11 @@ bool Blocky::handleEvent(SDL_Event* event)
         }
         else if (!m_moveMode)
         {
+            /*
             captureMouse();
             m_moveMode = true;
+            //m_menuOverlay->setVisible(false);
+             */
         }
     }
     else if (event->type == SDL_CONTROLLERAXISMOTION)
@@ -479,7 +492,7 @@ void Blocky::calcLookAt()
     m_lookingAtMob = nullptr;
     Vector last;
 
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 25; i++)
     {
         float dist = (float)i * 0.2f;
         Vector rayPos = ray.at(dist);
@@ -552,4 +565,9 @@ void Blocky::update()
 void Blocky::exit()
 {
     m_world->save();
+}
+
+BlockyApp::BlockyApp() : Frontier::FrontierApp(L"Blocky")
+{
+    setEngine(new WindowingEngine(this));
 }

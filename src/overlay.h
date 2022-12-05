@@ -11,18 +11,22 @@ class Blocky;
 
 class Overlay
 {
- private:
+ protected:
     Blocky* m_blocky;
 
-    int m_width;
-    int m_height;
+    int m_width = 0;
+    int m_height = 0;
     Geek::Gfx::Surface* m_overlaySurface = nullptr;
     Texture* m_overlayTexture = nullptr;
 
+    bool m_visible = true;
+
  public:
+    Overlay(Blocky* blocky);
     Overlay(Blocky* blocky, int width, int height);
     virtual ~Overlay();
 
+    void resize(int width, int height);
     Geek::Gfx::Surface* getSurface() { return m_overlaySurface; }
 
     virtual void draw() {draw(0, 0); }
@@ -41,6 +45,16 @@ class Overlay
     int getHeight() const
     {
         return m_height;
+    }
+
+    bool isVisible() const
+    {
+        return m_visible;
+    }
+
+    void setVisible(bool mVisible)
+    {
+        m_visible = mVisible;
     }
 };
 

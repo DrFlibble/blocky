@@ -40,5 +40,7 @@ void InfoOverlay::draw()
         getBlocky()->getFontManager()->write(getBlocky()->getFont(), infoSurface, 0, 12, buf, 0xffffff, true, nullptr);
 
     }
+    glDisable(GL_BLEND);
     Overlay::draw(0, 0);
+    glEnable(GL_BLEND);
 }

@@ -7,9 +7,27 @@
 #include "shader.h"
 #include "utils.h"
 
-Overlay::Overlay(Blocky* blocky, int width, int height)
+Overlay::Overlay(Blocky* blocky) : m_blocky(blocky), m_width(0), m_height(0)
 {
-    m_blocky = blocky;
+}
+
+Overlay::Overlay(Blocky* blocky, int width, int height) : m_blocky(blocky), m_width(width), m_height(height)
+{
+    resize(m_width, m_height);
+}
+
+Overlay::~Overlay() = default;
+
+void Overlay::resize(int width, int height)
+{
+    if (m_overlaySurface != nullptr && m_overlayTexture != nullptr && m_width == width && m_height == height)
+    {
+        return;
+    }
+
+    delete m_overlaySurface;
+    delete m_overlayTexture;
+
     m_width = width;
     m_height = height;
     int widthPow = powerOfTwo(width);
@@ -22,10 +40,13 @@ Overlay::Overlay(Blocky* blocky, int width, int height)
     m_overlayTexture = new Texture(m_overlaySurface);
 }
 
-Overlay::~Overlay() = default;
-
 void Overlay::draw(int x, int y)
 {
+    if (m_overlayTexture == nullptr || m_overlaySurface == nullptr)
+    {
+        return;
+    }
+
     OverlayShader* shader = m_blocky->getOverlayShader();
     shader->use();
     m_overlayTexture->generateTexture();

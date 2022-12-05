@@ -32,26 +32,29 @@ bool Entity::update()
             m_position.x += headingSin * m_forward + headingCos * m_strafe;
             m_position.z += headingCos * -m_forward + headingSin * m_strafe;
 
+            m_forward *= 0.75f;
+            m_strafe *= 0.75f;
+
             checkPos.x +=
                 headingSin * (m_forward * 2) +
                 headingCos * (m_strafe * 2);
             checkPos.z +=
                 headingCos * -(m_forward * 2) +
                 headingSin * (m_strafe * 2);
-            m_forward *= 0.75f;
-            m_strafe *= 0.75f;
 
             if (m_jump > 0)
             {
-                if (m_jump > 0.5)
+                float c = cos((1.0f-m_jump) * 1.0f * M_PI);
+                printf("update: JUMP: %0.2f -> %0.2f\n", m_jump, c);
+                //if (m_jump > 0.5)
                 {
-                    m_position.y += 0.4;
+                    m_position.y += c * 0.3;
                 }
-                else
-                {
-                    m_position.y -= 0.4;
-                }
-                m_jump -= 0.1;
+                m_jump -= 1.0f / 11.0f;
+                //else
+                //{
+                    //m_position.y -= c * 0.3;
+                //}
             }
         }
         m_lastMillis = time;
@@ -62,7 +65,7 @@ bool Entity::update()
         int entityZ = floor(checkPos.z);
         Block* nextBlockUnderEntity = m_world->getBlock(
             entityX,
-            entityY - 1,
+            ceil(checkPos.y) - 1,
             entityZ);
         bool hasBlockUnderEntity = nextBlockUnderEntity != nullptr;
         if (moving)
@@ -87,17 +90,24 @@ bool Entity::update()
             else if (hasBlockAtEntity)
             {
                 canMove = true;
-                m_position.y++;
+                m_position.y = entityY + 1;
                 hasBlockUnderEntity = true;
             }
         }
 
-        if (canMove && !hasBlockUnderEntity && m_jump <= 0)
+        if (/*canMove &&*/ !hasBlockUnderEntity && m_jump <= EPSILON)
         {
             // Falling!
             if (m_position.y > 0)
             {
-                m_position.y -= 1;
+                m_position.y -= 0.2;
+            }
+        }
+        else if (hasBlockUnderEntity)
+        {
+            if (m_position.y < entityY)
+            {
+                m_position.y = entityY;
             }
         }
 

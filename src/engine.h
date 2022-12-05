@@ -56,6 +56,8 @@ static void checkGLError(const char* function, int line, const char* msg)
 #define CHECK_GL_ERROR(__msg) {}
 #endif
 
+class Overlay;
+
 class BlockyEngine : protected Geek::Logger
 {
  protected:
@@ -71,6 +73,8 @@ class BlockyEngine : protected Geek::Logger
 
     Geek::FontManager* m_fontManager = nullptr;
     Geek::FontHandle* m_font = nullptr;
+
+    std::vector<Overlay*> m_overlays;
 
     SDL_GameController* m_controller = nullptr;
 
@@ -98,6 +102,13 @@ class BlockyEngine : protected Geek::Logger
 
     Geek::FontManager* getFontManager() { return m_fontManager; }
     Geek::FontHandle* getFont() { return m_font; }
+
+    void addOverlay(Overlay* overlay)
+    {
+        m_overlays.push_back(overlay);
+    }
+
+    void drawOverlays();
 };
 
 #endif //BLOCKY_ENGINE_H

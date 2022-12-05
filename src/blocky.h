@@ -11,12 +11,15 @@
 #include <geek/core-matrix.h>
 #include <geek/gfx-surface.h>
 
+#include <frontier/app.h>
+
 #include "models/blockmodel.h"
 #include "engine.h"
 #include "player.h"
 #include "overlays/crosshair.h"
 #include "overlays/infooverlay.h"
 #include "overlays/statusbar.h"
+#include "overlays/menu.h"
 #include "models/spheremodel.h"
 #include "spheremob.h"
 
@@ -30,9 +33,19 @@ class OverlayShader;
 class BlockModel;
 class Overlay;
 
+class BlockyApp : public Frontier::FrontierApp
+{
+ private:
+ public:
+    BlockyApp();
+    ~BlockyApp() = default;
+};
+
 class Blocky : public BlockyEngine
 {
  private:
+    BlockyApp* m_blockyApp;
+
     Model* m_blockModel = nullptr;
 
     Block* m_lookingAt = nullptr;
@@ -53,6 +66,7 @@ class Blocky : public BlockyEngine
     CrossHairOverlay* m_crossHairOverlay = nullptr;
     InfoOverlay* m_infoOverlay = nullptr;
     StatusBarOverlay* m_statusBarOverlay = nullptr;
+    MenuOverlay* m_menuOverlay = nullptr;
 
     World* m_world = nullptr;
     SphereModel* m_sphereModel = nullptr;
@@ -88,6 +102,7 @@ class Blocky : public BlockyEngine
     [[nodiscard]] GLuint getOverlayVAO() const { return m_overlayVAO; }
     [[nodiscard]] OverlayShader* getOverlayShader() const { return m_overlayProgram; }
 
+    BlockyApp* getApp() const { return m_blockyApp; }
     World* getWorld() const { return m_world; }
 
     Block* getLookingAt() { return m_lookingAt; }
