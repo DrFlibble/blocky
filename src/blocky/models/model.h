@@ -1,7 +1,7 @@
 #ifndef __BLOCKY_MODELS_MODEL_H_
 #define __BLOCKY_MODELS_MODEL_H_
 
-#include "ray.h"
+#include "libbrick/ray.h"
 
 enum Side
 {

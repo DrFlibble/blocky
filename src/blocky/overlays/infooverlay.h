@@ -5,7 +5,7 @@
 #ifndef BLOCKY_INFOOVERLAY_H
 #define BLOCKY_INFOOVERLAY_H
 
-#include "overlay.h"
+#include "libbrick/overlay.h"
 
 class InfoOverlay : public Overlay
 {

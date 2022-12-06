@@ -3,9 +3,9 @@
 //
 
 #include "statusbar.h"
-#include "blocky.h"
-#include "world.h"
-#include "entity.h"
+#include "blocky/blocky.h"
+#include "blocky/world.h"
+#include "blocky/entity.h"
 
 using namespace Geek;
 using namespace Geek::Gfx;

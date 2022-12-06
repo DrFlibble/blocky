@@ -1,6 +1,6 @@
 
-#include "models/model.h"
-#include "engine.h"
+#include "model.h"
+#include "libbrick/engine.h"
 
 void Model::draw() const
 {

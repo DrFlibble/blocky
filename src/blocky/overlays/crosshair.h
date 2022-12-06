@@ -5,7 +5,7 @@
 #ifndef BLOCKY_CROSSHAIR_H
 #define BLOCKY_CROSSHAIR_H
 
-#include "overlay.h"
+#include "libbrick/overlay.h"
 
 class CrossHairOverlay : public Overlay
 {

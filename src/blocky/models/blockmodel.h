@@ -1,8 +1,8 @@
 #ifndef BLOCKY_BLOCKMODEL_H
 #define BLOCKY_BLOCKMODEL_H
 
-#include "engine.h"
-#include "models/model.h"
+#include "libbrick/engine.h"
+#include "model.h"
 
 #include <geek/core-maths.h>
 

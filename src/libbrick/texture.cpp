@@ -1,6 +1,6 @@
 
 #include "texture.h"
-#include "blocky.h"
+#include "blocky/blocky.h"
 #include "utils.h"
 
 using namespace Geek;

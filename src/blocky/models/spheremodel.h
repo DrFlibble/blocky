@@ -5,8 +5,8 @@
 #ifndef BLOCKY_SPHEREMODEL_H
 #define BLOCKY_SPHEREMODEL_H
 
-#include "engine.h"
-#include "models/model.h"
+#include "libbrick/engine.h"
+#include "model.h"
 
 #include <vector>
 

@@ -3,9 +3,9 @@
 //
 
 #include "overlay.h"
-#include "blocky.h"
-#include "shader.h"
-#include "utils.h"
+#include "blocky/blocky.h"
+#include "blocky/blockyshaders.h"
+#include "libbrick/utils.h"
 
 Overlay::Overlay(Blocky* blocky) : m_blocky(blocky), m_width(0), m_height(0)
 {

@@ -13,7 +13,7 @@
 #include <geek/core-random.h>
 
 #include "chunk.h"
-#include "perlin.h"
+#include "libbrick/perlin.h"
 #include "player.h"
 #include "spheremob.h"
 

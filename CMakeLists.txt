@@ -24,45 +24,60 @@ add_definitions(
         ${nlohmann_json_CFLAGS}
         -DGL_SILENCE_DEPRECATION -DGL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 )
+
+add_library(brick SHARED
+        src/libbrick/texture.cpp
+        src/libbrick/texture.h
+        src/libbrick/perlin.cpp
+        src/libbrick/perlin.h
+        src/libbrick/ray.h
+        src/libbrick/ray.cpp
+        src/libbrick/engine.h
+        src/libbrick/engine.cpp
+        src/libbrick/overlay.cpp
+        src/libbrick/overlay.h
+        src/libbrick/shader.cpp
+        src/libbrick/shader.h
+        src/libbrick/utils.h
+        )
+target_link_libraries(
+        brick
+        ${OPENGL_LIBRARIES}
+        ${sdl2_LDFLAGS}
+        ${libgeek_LDFLAGS}
+)
+
 add_executable(blocky
-        src/main.cpp
-        src/texture.cpp
-        src/models/blockmodel.cpp
-        src/chunk.cpp
-        src/world.cpp
-        src/perlin.cpp
-        src/blocky.h
-        src/shader.h
-        src/shader.cpp
-        src/ray.h
-        src/ray.cpp
-        src/engine.h
-        src/engine.cpp
-        src/blocky.cpp
-        src/overlay.cpp
-        src/overlay.h
-        src/utils.h
-        src/player.cpp
-        src/player.h
-        src/blocks.h
-        src/models/model.cpp
-        src/models/model.h
-        src/overlays/crosshair.cpp
-        src/overlays/crosshair.h
-        src/overlays/infooverlay.cpp
-        src/overlays/infooverlay.h
-        src/overlays/statusbar.cpp
-        src/overlays/statusbar.h
-        src/entity.cpp
-        src/entity.h
-        src/models/spheremodel.cpp
-        src/models/spheremodel.h
-        src/spheremob.cpp
-        src/spheremob.h
-        src/overlays/menu.cpp
-        src/overlays/menu.h)
+        src/blocky/main.cpp
+        src/blocky/models/blockmodel.cpp
+        src/blocky/chunk.cpp
+        src/blocky/world.cpp
+        src/blocky/blocky.h
+        src/blocky/blockyshaders.h
+        src/blocky/blockyshaders.cpp
+        src/blocky/blocky.cpp
+        src/blocky/player.cpp
+        src/blocky/player.h
+        src/blocky/blocks.h
+        src/blocky/models/model.cpp
+        src/blocky/models/model.h
+        src/blocky/overlays/crosshair.cpp
+        src/blocky/overlays/crosshair.h
+        src/blocky/overlays/infooverlay.cpp
+        src/blocky/overlays/infooverlay.h
+        src/blocky/overlays/statusbar.cpp
+        src/blocky/overlays/statusbar.h
+        src/blocky/entity.cpp
+        src/blocky/entity.h
+        src/blocky/models/spheremodel.cpp
+        src/blocky/models/spheremodel.h
+        src/blocky/spheremob.cpp
+        src/blocky/spheremob.h
+        src/blocky/overlays/menu.cpp
+        src/blocky/overlays/menu.h)
 target_link_libraries(
         blocky
+        brick
         ${OPENGL_LIBRARIES}
         ${sdl2_LDFLAGS}
         ${libgeek_LDFLAGS}

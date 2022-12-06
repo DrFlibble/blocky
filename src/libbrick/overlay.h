@@ -2,7 +2,7 @@
 #define BLOCKY_OVERLAY_H
 
 #include <geek/gfx-surface.h>
-#include "texture.h"
+#include "libbrick/texture.h"
 
 class Blocky;
 

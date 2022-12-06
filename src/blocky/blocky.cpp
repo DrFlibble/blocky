@@ -1,9 +1,9 @@
-#include "texture.h"
-#include "models/blockmodel.h"
+#include "libbrick/texture.h"
+#include "blocky/models/blockmodel.h"
 #include "world.h"
-#include "shader.h"
+#include "blockyshaders.h"
 #include "blocky.h"
-#include "ray.h"
+#include "libbrick/ray.h"
 #include "entity.h"
 
 #include <frontier/engines/windowing.h>

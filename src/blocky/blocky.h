@@ -13,14 +13,14 @@
 
 #include <frontier/app.h>
 
-#include "models/blockmodel.h"
-#include "engine.h"
+#include "blocky/models/blockmodel.h"
+#include "libbrick/engine.h"
 #include "player.h"
-#include "overlays/crosshair.h"
-#include "overlays/infooverlay.h"
-#include "overlays/statusbar.h"
-#include "overlays/menu.h"
-#include "models/spheremodel.h"
+#include "blocky/overlays/crosshair.h"
+#include "blocky/overlays/infooverlay.h"
+#include "blocky/overlays/statusbar.h"
+#include "blocky/overlays/menu.h"
+#include "blocky/models/spheremodel.h"
 #include "spheremob.h"
 
 class World;

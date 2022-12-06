@@ -3,7 +3,7 @@
 //
 
 #include "menu.h"
-#include "blocky.h"
+#include "blocky/blocky.h"
 
 #include <frontier/widgets/button.h>
 #include <frontier/widgets/frame.h>

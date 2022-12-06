@@ -23,7 +23,7 @@ class Entity
     float m_jump = 0;
     float m_health = 10.0;
 
-    uint64_t m_lastMillis;
+    uint64_t m_lastMillis = 0;
 
  protected:
     float m_heading = 0;
@@ -42,14 +42,14 @@ class Entity
 
     void setPosition(Geek::Vector& pos) { m_position = pos; }
 
-    float getHeading() { return m_heading; }
+    float getHeading() const { return m_heading; }
 
     void setHeading(float heading)
     {
         m_heading = heading;
     }
 
-    float getPitch() { return m_pitch; }
+    float getPitch() const { return m_pitch; }
 
     void setPitch(float pitch)
     {
