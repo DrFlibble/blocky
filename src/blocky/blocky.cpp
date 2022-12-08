@@ -18,7 +18,7 @@ using namespace Geek;
 using namespace Geek::Gfx;
 using namespace Frontier;
 
-Blocky::Blocky() : BlockyEngine("Blocky")
+Blocky::Blocky() : BrickEngine("Blocky")
 {
     m_blockyApp = new BlockyApp();
     m_world = new World();

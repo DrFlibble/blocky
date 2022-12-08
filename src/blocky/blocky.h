@@ -42,7 +42,7 @@ class BlockyApp : public Frontier::FrontierApp
     ~BlockyApp() = default;
 };
 
-class Blocky : public BlockyEngine
+class Blocky : public BrickEngine
 {
  private:
     BlockyApp* m_blockyApp;

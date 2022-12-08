@@ -7,11 +7,11 @@
 #include "brick/shader.h"
 #include "utils.h"
 
-Overlay::Overlay(BlockyEngine* blocky) : m_blocky(blocky), m_width(0), m_height(0)
+Overlay::Overlay(BrickEngine* engine) : m_engine(engine), m_width(0), m_height(0)
 {
 }
 
-Overlay::Overlay(BlockyEngine* blocky, int width, int height) : m_blocky(blocky), m_width(width), m_height(height)
+Overlay::Overlay(BrickEngine* engine, int width, int height) : m_engine(engine), m_width(width), m_height(height)
 {
     resize(m_width, m_height);
 }
@@ -47,31 +47,31 @@ void Overlay::draw(int x, int y)
         return;
     }
 
-    OverlayShader* shader = m_blocky->getOverlayShader();
+    OverlayShader* shader = m_engine->getOverlayShader();
     shader->use();
     m_overlayTexture->generateTexture();
     m_overlayTexture->bind();
 
     if (x == OVERLAY_CENTRE)
     {
-        x = (m_blocky->getWidth() / 2) - (m_width / 2);
+        x = (m_engine->getWidth() / 2) - (m_width / 2);
     }
     else if (x == OVERLAY_END)
     {
-        x = m_blocky->getWidth() - m_width;
+        x = m_engine->getWidth() - m_width;
     }
 
     if (y == OVERLAY_CENTRE)
     {
-        y = (m_blocky->getHeight() / 2) - (m_height / 2);
+        y = (m_engine->getHeight() / 2) - (m_height / 2);
     }
     else if (y == OVERLAY_END)
     {
-        y = m_blocky->getHeight() - m_height;
+        y = m_engine->getHeight() - m_height;
     }
 
-    float sw = (float)m_blocky->getWidth();
-    float sh = (float)m_blocky->getHeight();
+    float sw = (float)m_engine->getWidth();
+    float sh = (float)m_engine->getHeight();
     shader->set(
         (float)x / sw,
         (float)y / sh,
@@ -80,6 +80,6 @@ void Overlay::draw(int x, int y)
         (float)m_width / (float)m_overlaySurface->getWidth(),
         (float)m_height / (float)m_overlaySurface->getHeight());
 
-    glBindVertexArray(m_blocky->getOverlayVAO());
+    glBindVertexArray(m_engine->getOverlayVAO());
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

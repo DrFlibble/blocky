@@ -31,7 +31,7 @@ StatusBarOverlay::StatusBarOverlay(Blocky* blocky) : Overlay(blocky, 330, 50)
 
 void StatusBarOverlay::draw()
 {
-    World* world = ((Blocky*)getBlocky())->getWorld();
+    World* world = ((Blocky*) getEngine())->getWorld();
     Surface* statusBarSurface = getSurface();
     statusBarSurface->clear(0x00000000);
     int i;
@@ -86,9 +86,9 @@ void StatusBarOverlay::draw()
             wchar_t buf[200];
             swprintf(buf, 200, L"%d", container.count);
 
-            getBlocky()->getFontManager()->write(getBlocky()->getFont(), nullptr, sbx + 2, 20, buf, 0xffffff, false, &width);
+            getEngine()->getFontManager()->write(getEngine()->getFont(), nullptr, sbx + 2, 20, buf, 0xffffff, false, &width);
             statusBarSurface->drawRectFilled(sbx + 2, 20, width, 14, 0x0);
-            getBlocky()->getFontManager()->write(getBlocky()->getFont(), statusBarSurface, sbx + 2, 20, buf, 0xffffff, true, nullptr);
+            getEngine()->getFontManager()->write(getEngine()->getFont(), statusBarSurface, sbx + 2, 20, buf, 0xffffff, true, nullptr);
         }
     }
 

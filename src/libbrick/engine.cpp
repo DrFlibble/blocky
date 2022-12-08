@@ -8,13 +8,13 @@
 using namespace std;
 using namespace Geek;
 
-BlockyEngine::BlockyEngine(const string& name) : Logger("BlockyEngine[" + name + "]")
+BrickEngine::BrickEngine(const string& name) : Logger("BrickEngine[" + name + "]")
 {
     m_screenWidth = 800;
     m_screenHeight = 600;
 }
 
-BlockyEngine::~BlockyEngine()
+BrickEngine::~BrickEngine()
 {
     if (m_context != nullptr)
     {
@@ -27,7 +27,7 @@ BlockyEngine::~BlockyEngine()
     }
 }
 
-bool BlockyEngine::init()
+bool BrickEngine::init()
 {
     int res;
     res = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
@@ -45,7 +45,7 @@ bool BlockyEngine::init()
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
     m_window = SDL_CreateWindow(
-        "Blocky",
+        "BrickEngine",
         100,
         100,
         m_screenWidth,
@@ -113,7 +113,7 @@ bool BlockyEngine::init()
     return true;
 }
 
-void BlockyEngine::resize(int width, int height)
+void BrickEngine::resize(int width, int height)
 {
     m_screenWidth = width;
     m_screenHeight = height;
@@ -139,7 +139,7 @@ void BlockyEngine::resize(int width, int height)
     m_matrixProjection[15] =  0;
 }
 
-void BlockyEngine::mainLoop()
+void BrickEngine::mainLoop()
 {
     resize(m_screenWidth, m_screenHeight);
 
@@ -183,7 +183,7 @@ void BlockyEngine::mainLoop()
     }
 }
 
-void BlockyEngine::frame()
+void BrickEngine::frame()
 {
     GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 
@@ -194,7 +194,7 @@ void BlockyEngine::frame()
     SDL_GL_SwapWindow(m_window);
 }
 
-void BlockyEngine::captureMouse()
+void BrickEngine::captureMouse()
 {
     SDL_WarpMouseInWindow(m_window, 0, 0);
     SDL_SetWindowInputFocus(m_window);
@@ -203,14 +203,14 @@ void BlockyEngine::captureMouse()
     SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
-void BlockyEngine::releaseMouse()
+void BrickEngine::releaseMouse()
 {
     SDL_CaptureMouse(SDL_FALSE);
     SDL_ShowCursor(SDL_TRUE);
     SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
-void BlockyEngine::drawOverlays()
+void BrickEngine::drawOverlays()
 {
     glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);

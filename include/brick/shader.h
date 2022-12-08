@@ -1,8 +1,8 @@
 //
 //
 
-#ifndef BLOCKY_SHADER_H
-#define BLOCKY_SHADER_H
+#ifndef BRICK_SHADER_H
+#define BRICK_SHADER_H
 
 #include <geek/core-logger.h>
 
@@ -43,4 +43,4 @@ class OverlayShader : public ShaderProgram
     void set(float x, float y, float width, float height, float textureWidth, float textureHeight) const;
 };
 
-#endif //BLOCKY_SHADER_H
+#endif //BRICK_SHADER_H

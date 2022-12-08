@@ -1,5 +1,5 @@
-#ifndef BLOCKY_TEXTURE_H
-#define BLOCKY_TEXTURE_H
+#ifndef BRICK_TEXTURE_H
+#define BRICK_TEXTURE_H
 
 #include <geek/gfx-surface.h>
 #include <geek/core-logger.h>
@@ -25,4 +25,4 @@ class Texture : private Geek::Logger
     bool generateTexture();
 };
 
-#endif //BLOCKY_TEXTURE_H
+#endif //BRICK_TEXTURE_H

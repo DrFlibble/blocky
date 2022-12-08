@@ -1,5 +1,5 @@
-#ifndef __BEYOND_PERLIN_H_
-#define __BEYOND_PERLIN_H_
+#ifndef BRICK_PERLIN_H_
+#define BRICK_PERLIN_H_
 
 class PerlinNoise
 {
@@ -12,7 +12,7 @@ class PerlinNoise
 
  public:
     PerlinNoise();
-    PerlinNoise(uint64_t seed);
+    explicit PerlinNoise(uint64_t seed);
     float noise(float x, float y);
 };
 

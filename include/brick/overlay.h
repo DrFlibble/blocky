@@ -1,10 +1,10 @@
-#ifndef BLOCKY_OVERLAY_H
-#define BLOCKY_OVERLAY_H
+#ifndef BRICK_OVERLAY_H
+#define BRICK_OVERLAY_H
 
 #include <geek/gfx-surface.h>
 #include "texture.h"
 
-class BlockyEngine;
+class BrickEngine;
 
 #define OVERLAY_CENTRE (-1000)
 #define OVERLAY_END (-2000)
@@ -12,7 +12,7 @@ class BlockyEngine;
 class Overlay
 {
  protected:
-    BlockyEngine* m_blocky;
+    BrickEngine* m_engine;
 
     int m_width = 0;
     int m_height = 0;
@@ -22,8 +22,8 @@ class Overlay
     bool m_visible = true;
 
  public:
-    explicit Overlay(BlockyEngine* blocky);
-    Overlay(BlockyEngine* blocky, int width, int height);
+    explicit Overlay(BrickEngine* engine);
+    Overlay(BrickEngine* engine, int width, int height);
     virtual ~Overlay();
 
     void resize(int width, int height);
@@ -32,9 +32,9 @@ class Overlay
     virtual void draw() {draw(0, 0); }
     void draw(int x, int y);
 
-    BlockyEngine* getBlocky() const
+    BrickEngine* getEngine() const
     {
-        return m_blocky;
+        return m_engine;
     }
 
     int getWidth() const
@@ -59,4 +59,4 @@ class Overlay
 };
 
 
-#endif //BLOCKY_OVERLAY_H
+#endif //BRICK_OVERLAY_H

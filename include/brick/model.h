@@ -2,8 +2,8 @@
 // Created by Ian Parker on 07/12/2022.
 //
 
-#ifndef BLOCKY_MODEL_H
-#define BLOCKY_MODEL_H
+#ifndef BRICK_MODEL_H
+#define BRICK_MODEL_H
 
 class Model
 {
@@ -19,4 +19,4 @@ class Model
     virtual void draw() const;
 };
 
-#endif //BLOCKY_MODEL_H
+#endif //BRICK_MODEL_H

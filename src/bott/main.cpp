@@ -5,7 +5,7 @@
 #include "brick/engine.h"
 #include "brick/model.h"
 
-class BottEngine : public BlockyEngine
+class BottEngine : public BrickEngine
 {
 
  public:
@@ -19,7 +19,7 @@ class BottEngine : public BlockyEngine
     void drawFrame() override;
 };
 
-BottEngine::BottEngine() : BlockyEngine("BotT")
+BottEngine::BottEngine() : BrickEngine("BotT")
 {
 
 }

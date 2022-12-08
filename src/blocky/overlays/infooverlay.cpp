@@ -19,7 +19,7 @@ void InfoOverlay::draw()
     Surface* infoSurface = getSurface();
     infoSurface->clear(0xff000000);
 
-    Blocky* blocky = (Blocky*)getBlocky();
+    Blocky* blocky = (Blocky*) getEngine();
     World* world = blocky->getWorld();
 
     wchar_t buf[200];
@@ -27,7 +27,7 @@ void InfoOverlay::draw()
              world->getPlayer().getPosition().x,
              world->getPlayer().getPosition().y,
              world->getPlayer().getPosition().z);
-    getBlocky()->getFontManager()->write(getBlocky()->getFont(), infoSurface, 0, 0, buf, 0xffffff, true, nullptr);
+    getEngine()->getFontManager()->write(getEngine()->getFont(), infoSurface, 0, 0, buf, 0xffffff, true, nullptr);
 
     Block* lookingAt = blocky->getLookingAt();
     if (lookingAt != nullptr)
@@ -38,7 +38,7 @@ void InfoOverlay::draw()
                  lookingAtPos.y,
                  lookingAtPos.z,
                  lookingAt->getType());
-        getBlocky()->getFontManager()->write(getBlocky()->getFont(), infoSurface, 0, 12, buf, 0xffffff, true, nullptr);
+        getEngine()->getFontManager()->write(getEngine()->getFont(), infoSurface, 0, 12, buf, 0xffffff, true, nullptr);
 
     }
     glDisable(GL_BLEND);

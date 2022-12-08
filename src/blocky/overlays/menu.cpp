@@ -16,7 +16,7 @@ MenuOverlay::MenuOverlay(Blocky* blocky) : Overlay(blocky)
 
 void MenuOverlay::init()
 {
-    Blocky* blocky = (Blocky*)m_blocky;
+    Blocky* blocky = (Blocky*)m_engine;
     m_window = new Frontier::FrontierWindow(blocky->getApp(), L"Menu", Frontier::WINDOW_NORMAL);
 
     Frame* mainFrame = new VFrame(blocky->getApp());

@@ -1,5 +1,5 @@
-#ifndef BLOCKY_RAY_H
-#define BLOCKY_RAY_H
+#ifndef BRICK_RAY_H
+#define BRICK_RAY_H
 
 #include <geek/core-maths.h>
 
@@ -42,4 +42,4 @@ class AABB
     [[nodiscard]] bool hit(const Ray& r, double t_min, double t_max) const;
 };
 
-#endif //BLOCKY_RAY_H
+#endif //BRICK_RAY_H

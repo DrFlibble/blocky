@@ -1,8 +1,8 @@
 //
 //
 
-#ifndef BLOCKY_ENGINE_H
-#define BLOCKY_ENGINE_H
+#ifndef BRICK_ENGINE_H
+#define BRICK_ENGINE_H
 
 #ifdef __APPLE__
 #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED 1
@@ -59,7 +59,7 @@ static void checkGLError(const char* function, int line, const char* msg)
 class Overlay;
 class OverlayShader;
 
-class BlockyEngine : protected Geek::Logger
+class BrickEngine : protected Geek::Logger
 {
  private:
     int m_screenWidth;
@@ -93,8 +93,8 @@ class BlockyEngine : protected Geek::Logger
     void releaseMouse();
 
  public:
-    explicit BlockyEngine(const std::string& name);
-    virtual ~BlockyEngine();
+    explicit BrickEngine(const std::string& name);
+    virtual ~BrickEngine();
 
     bool init();
 
@@ -123,4 +123,4 @@ class BlockyEngine : protected Geek::Logger
 
 };
 
-#endif //BLOCKY_ENGINE_H
+#endif //BRICK_ENGINE_H
