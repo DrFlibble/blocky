@@ -5,7 +5,7 @@
 #define BLOCKY_BLOCKYSHADERS_H
 
 #include "blocky.h"
-#include "libbrick/shader.h"
+#include "brick/shader.h"
 
 #include <geek/core-logger.h>
 

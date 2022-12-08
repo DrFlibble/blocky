@@ -3,7 +3,7 @@
 //
 
 #include "spheremodel.h"
-#include "libbrick/engine.h"
+#include "brick/engine.h"
 
 using namespace std;
 

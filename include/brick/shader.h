@@ -6,7 +6,7 @@
 
 #include <geek/core-logger.h>
 
-#include "engine.h"
+#include "brick/engine.h"
 
 class ShaderProgram : private Geek::Logger
 {

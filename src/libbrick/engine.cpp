@@ -1,8 +1,9 @@
 //
 //
 
-#include "engine.h"
-#include "overlay.h"
+#include "brick/engine.h"
+#include "brick/overlay.h"
+#include "brick/shader.h"
 
 using namespace std;
 using namespace Geek;
@@ -73,6 +74,17 @@ bool BlockyEngine::init()
     {
         return false;
     }
+
+    m_overlayProgram = new OverlayShader();
+    res = m_overlayProgram->load();
+    if (!res)
+    {
+        return false;
+    }
+
+    m_overlayProgram->unuse();
+
+    glGenVertexArrays(1, &m_overlayVAO);
 
     res = initGame();
     if (!res)

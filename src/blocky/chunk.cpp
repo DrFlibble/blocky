@@ -2,7 +2,7 @@
 //
 
 #include "chunk.h"
-#include "libbrick/perlin.h"
+#include "brick/perlin.h"
 
 using namespace std;
 using namespace Geek;

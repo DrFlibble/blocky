@@ -16,12 +16,13 @@ MenuOverlay::MenuOverlay(Blocky* blocky) : Overlay(blocky)
 
 void MenuOverlay::init()
 {
-    m_window = new Frontier::FrontierWindow(m_blocky->getApp(), L"Menu", Frontier::WINDOW_NORMAL);
+    Blocky* blocky = (Blocky*)m_blocky;
+    m_window = new Frontier::FrontierWindow(blocky->getApp(), L"Menu", Frontier::WINDOW_NORMAL);
 
-    Frame* mainFrame = new VFrame(m_blocky->getApp());
+    Frame* mainFrame = new VFrame(blocky->getApp());
 
-    mainFrame->add(new Label(m_blocky->getApp(), L"Blocky!"));
-    Button* button = new Button(m_blocky->getApp(), L"Quit");
+    mainFrame->add(new Label(blocky->getApp(), L"Blocky!"));
+    Button* button = new Button(blocky->getApp(), L"Quit");
     mainFrame->add(button);
     m_window->setContent(mainFrame);
 

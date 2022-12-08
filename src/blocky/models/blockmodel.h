@@ -1,14 +1,14 @@
 #ifndef BLOCKY_BLOCKMODEL_H
 #define BLOCKY_BLOCKMODEL_H
 
-#include "libbrick/engine.h"
+#include "brick/engine.h"
 #include "model.h"
 
 #include <geek/core-maths.h>
 
 class Ray;
 
-class BlockModel : public Model
+class BlockModel : public BlockyModel
 {
  private:
     GLuint m_cubeVBO = 0;

@@ -31,7 +31,7 @@ StatusBarOverlay::StatusBarOverlay(Blocky* blocky) : Overlay(blocky, 330, 50)
 
 void StatusBarOverlay::draw()
 {
-    World* world = getBlocky()->getWorld();
+    World* world = ((Blocky*)getBlocky())->getWorld();
     Surface* statusBarSurface = getSurface();
     statusBarSurface->clear(0x00000000);
     int i;

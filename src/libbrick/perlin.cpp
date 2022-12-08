@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstdint>
 
-#include "perlin.h"
+#include "brick/perlin.h"
 
 PerlinNoise::PerlinNoise()
 {

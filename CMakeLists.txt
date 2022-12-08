@@ -15,7 +15,7 @@ SET(FLAGS_COMMON "-Wall -Werror")
 SET(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_COMMON} -O0 -g -fsanitize=address -fsanitize-address-use-after-scope -fno-omit-frame-pointer")
 SET(CMAKE_CXX_FLAGS_RELEASE  "${FLAGS_COMMON} -O3")
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/include)
 
 add_definitions(
         ${libgeek_CFLAGS}
@@ -27,17 +27,17 @@ add_definitions(
 
 add_library(brick SHARED
         src/libbrick/texture.cpp
-        src/libbrick/texture.h
+        include/brick/texture.h
         src/libbrick/perlin.cpp
-        src/libbrick/perlin.h
-        src/libbrick/ray.h
+        include/brick/perlin.h
+        include/brick/ray.h
         src/libbrick/ray.cpp
-        src/libbrick/engine.h
+        include/brick/engine.h
         src/libbrick/engine.cpp
         src/libbrick/overlay.cpp
-        src/libbrick/overlay.h
+        include/brick/overlay.h
         src/libbrick/shader.cpp
-        src/libbrick/shader.h
+        include/brick/shader.h
         src/libbrick/utils.h
         )
 target_link_libraries(
@@ -59,7 +59,7 @@ add_executable(blocky
         src/blocky/player.cpp
         src/blocky/player.h
         src/blocky/blocks.h
-        src/blocky/models/model.cpp
+        src/libbrick/model.cpp
         src/blocky/models/model.h
         src/blocky/overlays/crosshair.cpp
         src/blocky/overlays/crosshair.h
@@ -77,6 +77,18 @@ add_executable(blocky
         src/blocky/overlays/menu.h)
 target_link_libraries(
         blocky
+        brick
+        ${OPENGL_LIBRARIES}
+        ${sdl2_LDFLAGS}
+        ${libgeek_LDFLAGS}
+        ${libfrontier_LDFLAGS}
+        ${nlohmann_json_LDFLAGS})
+
+add_executable(bott
+        src/bott/main.cpp
+        )
+target_link_libraries(
+        bott
         brick
         ${OPENGL_LIBRARIES}
         ${sdl2_LDFLAGS}

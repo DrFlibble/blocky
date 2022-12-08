@@ -1,5 +1,5 @@
 
-#include "texture.h"
+#include "brick/texture.h"
 #include "blocky/blocky.h"
 #include "utils.h"
 

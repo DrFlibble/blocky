@@ -5,7 +5,8 @@
 #ifndef BLOCKY_MENU_H
 #define BLOCKY_MENU_H
 
-#include "libbrick/overlay.h"
+#include "brick/overlay.h"
+#include "blocky/blocky.h"
 
 #include <frontier/window.h>
 

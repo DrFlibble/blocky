@@ -2,17 +2,17 @@
 #define BLOCKY_OVERLAY_H
 
 #include <geek/gfx-surface.h>
-#include "libbrick/texture.h"
+#include "texture.h"
 
-class Blocky;
+class BlockyEngine;
 
-#define OVERLAY_CENTRE -1000
-#define OVERLAY_END -2000
+#define OVERLAY_CENTRE (-1000)
+#define OVERLAY_END (-2000)
 
 class Overlay
 {
  protected:
-    Blocky* m_blocky;
+    BlockyEngine* m_blocky;
 
     int m_width = 0;
     int m_height = 0;
@@ -22,8 +22,8 @@ class Overlay
     bool m_visible = true;
 
  public:
-    Overlay(Blocky* blocky);
-    Overlay(Blocky* blocky, int width, int height);
+    explicit Overlay(BlockyEngine* blocky);
+    Overlay(BlockyEngine* blocky, int width, int height);
     virtual ~Overlay();
 
     void resize(int width, int height);
@@ -32,7 +32,7 @@ class Overlay
     virtual void draw() {draw(0, 0); }
     void draw(int x, int y);
 
-    Blocky* getBlocky() const
+    BlockyEngine* getBlocky() const
     {
         return m_blocky;
     }

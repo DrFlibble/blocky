@@ -1,7 +1,7 @@
 //
 //
 
-#include "shader.h"
+#include "brick/shader.h"
 
 #include <geek/core-data.h>
 

@@ -14,12 +14,8 @@
 #include <frontier/app.h>
 
 #include "blocky/models/blockmodel.h"
-#include "libbrick/engine.h"
+#include "brick/engine.h"
 #include "player.h"
-#include "blocky/overlays/crosshair.h"
-#include "blocky/overlays/infooverlay.h"
-#include "blocky/overlays/statusbar.h"
-#include "blocky/overlays/menu.h"
 #include "blocky/models/spheremodel.h"
 #include "spheremob.h"
 
@@ -32,6 +28,11 @@ class SkyShader;
 class OverlayShader;
 class BlockModel;
 class Overlay;
+
+class CrossHairOverlay;
+class InfoOverlay;
+class StatusBarOverlay;
+class MenuOverlay;
 
 class BlockyApp : public Frontier::FrontierApp
 {
@@ -46,8 +47,9 @@ class Blocky : public BlockyEngine
  private:
     BlockyApp* m_blockyApp;
 
-    Model* m_blockModel = nullptr;
+    BlockyModel* m_blockModel = nullptr;
 
+    bool m_moveMode = true;
     Block* m_lookingAt = nullptr;
     Side m_lookingAtSide = NONE;
     SphereMob* m_lookingAtMob = nullptr;
@@ -55,7 +57,6 @@ class Blocky : public BlockyEngine
 
     MainShader* m_mainProgram = nullptr;
     SkyShader* m_skyProgram = nullptr;
-    OverlayShader* m_overlayProgram = nullptr;
 
     Texture* m_dirtTexture = nullptr;
     Texture* m_grassTexture = nullptr;
@@ -72,7 +73,6 @@ class Blocky : public BlockyEngine
     SphereModel* m_sphereModel = nullptr;
 
     GLuint m_skyVAO = 0;
-    GLuint m_overlayVAO = 0;
 
     float m_controllerForward = 0.0;
     float m_controllerStrafe = 0.0;
@@ -96,11 +96,6 @@ class Blocky : public BlockyEngine
     void exit() override;
 
     bool handleEvent(SDL_Event* event) override;
-
-    int getWidth() { return m_screenWidth; }
-    int getHeight() { return m_screenHeight; }
-    [[nodiscard]] GLuint getOverlayVAO() const { return m_overlayVAO; }
-    [[nodiscard]] OverlayShader* getOverlayShader() const { return m_overlayProgram; }
 
     BlockyApp* getApp() const { return m_blockyApp; }
     World* getWorld() const { return m_world; }

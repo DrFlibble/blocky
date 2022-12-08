@@ -1,7 +1,8 @@
 #ifndef __BLOCKY_MODELS_MODEL_H_
 #define __BLOCKY_MODELS_MODEL_H_
 
-#include "libbrick/ray.h"
+#include "brick/ray.h"
+#include "brick/model.h"
 
 enum Side
 {
@@ -21,20 +22,11 @@ struct Hit
     float t = std::numeric_limits<float>::max();
 };
 
-class Model
+
+class BlockyModel : public Model
 {
  public:
-    [[nodiscard]] virtual void* getPositionPtr() const = 0;
-    [[nodiscard]] virtual void* getNormalPtr() const = 0;
-    [[nodiscard]] virtual void* getTexCoordPtr() const = 0;
-
-    virtual bool init() = 0;
-
-    virtual void bind() const = 0;
-
     virtual Side hit(const Geek::Vector& pos, Ray* ray) = 0;
-
-    virtual void draw() const;
 };
 
 #endif

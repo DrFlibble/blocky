@@ -5,7 +5,8 @@
 #ifndef BLOCKY_STATUSBAR_H
 #define BLOCKY_STATUSBAR_H
 
-#include "libbrick/overlay.h"
+#include "brick/overlay.h"
+#include "blocky/blocky.h"
 
 class StatusBarOverlay : public Overlay
 {

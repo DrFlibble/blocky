@@ -5,12 +5,12 @@
 #ifndef BLOCKY_SPHEREMODEL_H
 #define BLOCKY_SPHEREMODEL_H
 
-#include "libbrick/engine.h"
+#include "brick/engine.h"
 #include "model.h"
 
 #include <vector>
 
-class SphereModel : public Model
+class SphereModel : public BlockyModel
 {
  private:
     float radius = 0.5f;

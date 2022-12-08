@@ -57,26 +57,30 @@ static void checkGLError(const char* function, int line, const char* msg)
 #endif
 
 class Overlay;
+class OverlayShader;
 
 class BlockyEngine : protected Geek::Logger
 {
- protected:
+ private:
     int m_screenWidth;
     int m_screenHeight;
-    bool m_moveMode = true;
 
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = nullptr;
 
-    Geek::Matrix4 m_matrixModelView;
-    Geek::Matrix4 m_matrixProjection;
-
     Geek::FontManager* m_fontManager = nullptr;
     Geek::FontHandle* m_font = nullptr;
 
+    OverlayShader* m_overlayProgram = nullptr;
+    GLuint m_overlayVAO = 0;
     std::vector<Overlay*> m_overlays;
 
     SDL_GameController* m_controller = nullptr;
+
+ protected:
+
+    Geek::Matrix4 m_matrixModelView;
+    Geek::Matrix4 m_matrixProjection;
 
     virtual bool initShaders() = 0;
     virtual bool initGame() = 0;
@@ -102,6 +106,10 @@ class BlockyEngine : protected Geek::Logger
 
     Geek::FontManager* getFontManager() { return m_fontManager; }
     Geek::FontHandle* getFont() { return m_font; }
+    SDL_GameController* getGameController() { return m_controller; }
+
+    int getWidth() const { return m_screenWidth; }
+    int getHeight() const { return m_screenHeight; }
 
     void addOverlay(Overlay* overlay)
     {
@@ -109,6 +117,10 @@ class BlockyEngine : protected Geek::Logger
     }
 
     void drawOverlays();
+
+    [[nodiscard]] GLuint getOverlayVAO() const { return m_overlayVAO; }
+    [[nodiscard]] OverlayShader* getOverlayShader() const { return m_overlayProgram; }
+
 };
 
 #endif //BLOCKY_ENGINE_H

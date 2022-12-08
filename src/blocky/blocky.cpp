@@ -1,10 +1,15 @@
-#include "libbrick/texture.h"
+#include "brick/texture.h"
 #include "blocky/models/blockmodel.h"
 #include "world.h"
 #include "blockyshaders.h"
 #include "blocky.h"
-#include "libbrick/ray.h"
+#include "brick/ray.h"
 #include "entity.h"
+
+#include "overlays/crosshair.h"
+#include "overlays/infooverlay.h"
+#include "overlays/menu.h"
+#include "overlays/statusbar.h"
 
 #include <frontier/engines/windowing.h>
 
@@ -28,7 +33,6 @@ bool Blocky::initGame()
         return false;
     }
 
-    glGenVertexArrays(1, &m_overlayVAO);
     glGenVertexArrays(1, &m_skyVAO);
 
     m_blockModel = new BlockModel();
@@ -85,14 +89,6 @@ bool Blocky::initShaders()
 
     m_skyProgram->unuse();
 
-    m_overlayProgram = new OverlayShader();
-    res = m_overlayProgram->load();
-    if (!res)
-    {
-        return false;
-    }
-
-    m_overlayProgram->unuse();
 
     return true;
 }
@@ -390,10 +386,10 @@ bool Blocky::handleEvent(SDL_Event* event)
         else if (event->cbutton.button == SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)
         {
             breakBlock();
-            if (m_controller != nullptr)
+            if (getGameController() != nullptr)
             {
                 SDL_GameControllerRumble(
-                    m_controller,
+                    getGameController(),
                     0xFFFF * 3 / 4,
                     0xFFFF * 3 / 4,
                     250 );

@@ -1,7 +1,7 @@
 //
 //
 
-#include "ray.h"
+#include "brick/ray.h"
 
 bool AABB::hit(const Ray& r, double t_min, double t_max) const
 {

@@ -19,7 +19,8 @@ void InfoOverlay::draw()
     Surface* infoSurface = getSurface();
     infoSurface->clear(0xff000000);
 
-    World* world = getBlocky()->getWorld();
+    Blocky* blocky = (Blocky*)getBlocky();
+    World* world = blocky->getWorld();
 
     wchar_t buf[200];
     swprintf(buf, 200, L"X: %0.2f, Y: %0.2f, Z: %0.2f",
@@ -28,10 +29,10 @@ void InfoOverlay::draw()
              world->getPlayer().getPosition().z);
     getBlocky()->getFontManager()->write(getBlocky()->getFont(), infoSurface, 0, 0, buf, 0xffffff, true, nullptr);
 
-    Block* lookingAt = getBlocky()->getLookingAt();
+    Block* lookingAt = blocky->getLookingAt();
     if (lookingAt != nullptr)
     {
-        Vector lookingAtPos = getBlocky()->getLookingAtPos();
+        Vector lookingAtPos = blocky->getLookingAtPos();
         swprintf(buf, 200, L"Looking at: X: %0.2f, Y: %0.2f, Z: %0.2f Type: %d",
                  lookingAtPos.x,
                  lookingAtPos.y,

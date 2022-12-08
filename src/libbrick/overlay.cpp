@@ -2,16 +2,16 @@
 // Created by Ian Parker on 24/08/2022.
 //
 
-#include "overlay.h"
-#include "blocky/blocky.h"
-#include "blocky/blockyshaders.h"
-#include "libbrick/utils.h"
+#include "brick/overlay.h"
+#include "brick/engine.h"
+#include "brick/shader.h"
+#include "utils.h"
 
-Overlay::Overlay(Blocky* blocky) : m_blocky(blocky), m_width(0), m_height(0)
+Overlay::Overlay(BlockyEngine* blocky) : m_blocky(blocky), m_width(0), m_height(0)
 {
 }
 
-Overlay::Overlay(Blocky* blocky, int width, int height) : m_blocky(blocky), m_width(width), m_height(height)
+Overlay::Overlay(BlockyEngine* blocky, int width, int height) : m_blocky(blocky), m_width(width), m_height(height)
 {
     resize(m_width, m_height);
 }

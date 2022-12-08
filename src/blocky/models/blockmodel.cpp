@@ -2,7 +2,7 @@
 //
 
 #include "blockmodel.h"
-#include "libbrick/ray.h"
+#include "brick/ray.h"
 
 const double epsilon = std::numeric_limits<double>::epsilon();
 
