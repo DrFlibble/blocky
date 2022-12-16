@@ -26,18 +26,21 @@ add_definitions(
 )
 
 add_library(brick SHARED
-        src/libbrick/texture.cpp
         include/brick/texture.h
-        src/libbrick/perlin.cpp
         include/brick/perlin.h
         include/brick/ray.h
-        src/libbrick/ray.cpp
         include/brick/engine.h
+        include/brick/overlay.h
+        include/brick/shader.h
+        include/brick/baseentity.h
+        src/libbrick/texture.cpp
+        src/libbrick/model.cpp
+        src/libbrick/perlin.cpp
+        src/libbrick/ray.cpp
         src/libbrick/engine.cpp
         src/libbrick/overlay.cpp
-        include/brick/overlay.h
         src/libbrick/shader.cpp
-        include/brick/shader.h
+        src/libbrick/baseentity.cpp
         src/libbrick/utils.h
         )
 target_link_libraries(
@@ -59,7 +62,6 @@ add_executable(blocky
         src/blocky/player.cpp
         src/blocky/player.h
         src/blocky/blocks.h
-        src/libbrick/model.cpp
         src/blocky/models/model.h
         src/blocky/overlays/crosshair.cpp
         src/blocky/overlays/crosshair.h
@@ -86,7 +88,9 @@ target_link_libraries(
 
 add_executable(bott
         src/bott/main.cpp
-        )
+        src/bott/simpleshader.cpp
+        src/bott/terrainchunk.cpp
+        src/bott/grassshader.h src/bott/grassshader.cpp src/bott/terrain.h src/bott/terrain.cpp src/bott/player.h src/bott/player.cpp src/bott/bott.cpp)
 target_link_libraries(
         bott
         brick

@@ -23,7 +23,7 @@ class World;
 class Texture;
 class Chunk;
 class Block;
-class MainShader;
+class BlockyShader;
 class SkyShader;
 class OverlayShader;
 class BlockModel;
@@ -55,7 +55,7 @@ class Blocky : public BrickEngine
     SphereMob* m_lookingAtMob = nullptr;
     Geek::Vector m_lookingAtPos;
 
-    MainShader* m_mainProgram = nullptr;
+    BlockyShader* m_mainProgram = nullptr;
     SkyShader* m_skyProgram = nullptr;
 
     Texture* m_dirtTexture = nullptr;
@@ -73,11 +73,6 @@ class Blocky : public BrickEngine
     SphereModel* m_sphereModel = nullptr;
 
     GLuint m_skyVAO = 0;
-
-    float m_controllerForward = 0.0;
-    float m_controllerStrafe = 0.0;
-    float m_controllerHeading = 0.0;
-    float m_controllerPitch = 0.0;
 
     bool initShaders() override;
     bool initGame() override;

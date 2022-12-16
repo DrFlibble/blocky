@@ -9,7 +9,7 @@
 
 #include <geek/core-logger.h>
 
-class MainShader : public ShaderProgram
+class BlockyShader : public ShaderProgram
 {
  private:
     GLint m_uniformMatrixModelView = 0;
@@ -23,8 +23,8 @@ class MainShader : public ShaderProgram
     GLint m_uniformHighlight = 0;
 
  public:
-    MainShader();
-    ~MainShader() override;
+    BlockyShader();
+    ~BlockyShader() override;
 
     bool load();
 

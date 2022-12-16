@@ -73,7 +73,7 @@ bool Blocky::initShaders()
 {
     bool res;
 
-    m_mainProgram = new MainShader();
+    m_mainProgram = new BlockyShader();
     res = m_mainProgram->load();
     if (!res)
     {
@@ -256,30 +256,17 @@ void Blocky::drawChunk(Chunk* chunk)
 bool Blocky::handleEvent(SDL_Event* event)
 {
     Player& player = m_world->getPlayer();
-    if (event->type == SDL_KEYDOWN)
+
+    if (m_moveMode)
     {
-        if (event->key.keysym.sym == SDLK_w)
+        bool handled = player.handleEvent(event);
+        if (handled)
         {
-            player.setForward(0.2f);
-        }
-        else if (event->key.keysym.sym == SDLK_s)
-        {
-            player.setForward(-0.2f);
-        }
-        else if (event->key.keysym.sym == SDLK_a)
-        {
-            player.setStrafe(-0.2f);
-        }
-        else if (event->key.keysym.sym == SDLK_d)
-        {
-            player.setStrafe(0.2f);
-        }
-        else if (player.getJump() <= 0 && event->key.keysym.sym == SDLK_SPACE)
-        {
-            player.setJump(1.0f);
+            return true;
         }
     }
-    else if (event->type == SDL_KEYUP)
+
+    if (event->type == SDL_KEYUP)
     {
         int sym = event->key.keysym.sym;
         if (sym >= SDLK_1 && sym <= SDLK_9)
@@ -298,23 +285,6 @@ bool Blocky::handleEvent(SDL_Event* event)
 
             m_menuOverlay->setVisible(true);
         }
-    }
-    else if (m_moveMode && event->type == SDL_MOUSEMOTION)
-    {
-        float heading = player.getHeading();
-        float pitch = player.getPitch();
-        heading += (float) (event->motion.xrel) * 0.1f;
-        pitch += (float) (event->motion.yrel) * 0.1f;
-        if (pitch > 90.0)
-        {
-            pitch = 90.0;
-        }
-        else if (pitch < -90.0)
-        {
-            pitch = -90.0;
-        }
-        player.setHeading(heading);
-        player.setPitch(pitch);
     }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
@@ -342,36 +312,6 @@ bool Blocky::handleEvent(SDL_Event* event)
             m_moveMode = true;
             //m_menuOverlay->setVisible(false);
              */
-        }
-    }
-    else if (event->type == SDL_CONTROLLERAXISMOTION)
-    {
-        float pct = (float)event->caxis.value / (float)0x7fff;
-        if (fabs(pct) < 0.5)
-        {
-            pct = 0;
-        }
-
-        log(DEBUG, "handleEvent: Controller Axis: axis=%d, value=%d, pct=%0.2f%%",
-            event->caxis.axis,
-            event->caxis.value,
-            pct * 100.0f);
-
-        if (event->caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
-        {
-            m_controllerForward = -pct;
-        }
-        if (event->caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
-        {
-            m_controllerStrafe = pct;
-        }
-        else if (event->caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
-        {
-            m_controllerHeading = pct;
-        }
-        else if (event->caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
-        {
-            m_controllerPitch = pct;
         }
     }
     else if (event->type == SDL_CONTROLLERBUTTONDOWN)
@@ -534,22 +474,6 @@ void Blocky::calcLookAt()
 
 void Blocky::update()
 {
-    if (fabs(m_controllerForward) > EPSILON)
-    {
-        m_world->getPlayer().setForward(0.2 * m_controllerForward);
-    }
-    if (fabs(m_controllerStrafe) > EPSILON)
-    {
-        m_world->getPlayer().setStrafe(0.2 * m_controllerStrafe);
-    }
-    if (fabs(m_controllerHeading) > EPSILON)
-    {
-        m_world->getPlayer().setHeading(m_world->getPlayer().getHeading() + (4.0 * m_controllerHeading));
-    }
-    if (fabs(m_controllerPitch) > EPSILON)
-    {
-        m_world->getPlayer().setPitch(m_world->getPlayer().getPitch() + (3.0 * m_controllerPitch));
-    }
 
     bool changed = m_world->update();
     if (changed)

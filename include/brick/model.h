@@ -8,9 +8,9 @@
 class Model
 {
  public:
-    [[nodiscard]] virtual void* getPositionPtr() const = 0;
-    [[nodiscard]] virtual void* getNormalPtr() const = 0;
-    [[nodiscard]] virtual void* getTexCoordPtr() const = 0;
+    [[nodiscard]] virtual void* getPositionPtr() const { return nullptr; }
+    [[nodiscard]] virtual void* getNormalPtr() const { return nullptr; }
+    [[nodiscard]] virtual void* getTexCoordPtr() const { return nullptr; }
 
     virtual bool init() = 0;
 

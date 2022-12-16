@@ -38,7 +38,7 @@ void Texture::bind()
         generateTexture();
     }
     GL(glBindTexture(GL_TEXTURE_2D, m_texture));
-    GL(glBindSampler(m_texture, m_sampler));
+    //GL(glBindSampler(m_texture, m_sampler));
 }
 
 bool Texture::generateTexture()
@@ -68,6 +68,8 @@ bool Texture::generateTexture()
         GL_UNSIGNED_BYTE,
         m_surface->getData()));
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     GL(glGenerateMipmap(GL_TEXTURE_2D));

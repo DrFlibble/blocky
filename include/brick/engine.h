@@ -111,6 +111,16 @@ class BrickEngine : protected Geek::Logger
     int getWidth() const { return m_screenWidth; }
     int getHeight() const { return m_screenHeight; }
 
+    [[nodiscard]] const Geek::Matrix4& getMatrixModelView() const
+    {
+        return m_matrixModelView;
+    }
+
+    [[nodiscard]] const Geek::Matrix4& getMatrixProjection() const
+    {
+        return m_matrixProjection;
+    }
+
     void addOverlay(Overlay* overlay)
     {
         m_overlays.push_back(overlay);

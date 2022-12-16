@@ -20,7 +20,7 @@ class SphereModel : public BlockyModel
     std::vector<float> normals;
     std::vector<float> texCoords;
     std::vector<unsigned int> indices;
-    std::vector<unsigned int> lineIndices;
+    //std::vector<unsigned int> lineIndices;
 
     GLuint m_vbo = 0;
     GLuint m_ibo = 0;

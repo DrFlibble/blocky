@@ -3,63 +3,28 @@
 //
 
 #include "brick/engine.h"
-#include "brick/model.h"
+#include "brick/texture.h"
+#include "brick/baseentity.h"
+#include "simpleshader.h"
+#include "grassshader.h"
+#include "terrain.h"
+#include "bott.h"
 
-class BottEngine : public BrickEngine
-{
+class SimpleShader;
+class TerrainChunk;
+class BottEngine;
 
- public:
-    BottEngine();
-    ~BottEngine() override;
-
-    bool initShaders() override;
-    bool initGame() override;
-    bool handleEvent(SDL_Event* event) override;
-    void update() override;
-    void drawFrame() override;
-};
-
-BottEngine::BottEngine() : BrickEngine("BotT")
-{
-
-}
-
-BottEngine::~BottEngine()
-{
-
-}
-
-bool BottEngine::initShaders()
-{
-    return false;
-}
-
-bool BottEngine::initGame()
-{
-    return false;
-}
-
-bool BottEngine::handleEvent(SDL_Event* event)
-{
-    return false;
-}
-
-void BottEngine::update()
-{
-
-}
-
-void BottEngine::drawFrame()
-{
-
-}
+using namespace std;
+using namespace Geek::Gfx;
 
 int main(int argc, char** argv)
 {
-    BottEngine* bottEngine = new BottEngine();
+    auto bottEngine = new BottEngine();
     bottEngine->init();
 
     bottEngine->mainLoop();
+
+    delete bottEngine;
 
     return 0;
 }

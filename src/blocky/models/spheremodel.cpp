@@ -89,8 +89,8 @@ bool SphereModel::init()
                 addIndices(index, index+1, index+2);
 
                 // indices for line (first stack requires only vertical line)
-                lineIndices.push_back(index);
-                lineIndices.push_back(index+1);
+                //lineIndices.push_back(index);
+                //lineIndices.push_back(index+1);
 
                 index += 3;     // for next
             }
@@ -117,10 +117,10 @@ bool SphereModel::init()
                 addIndices(index, index+1, index+2);
 
                 // indices for lines (last stack requires both vert/hori lines)
-                lineIndices.push_back(index);
-                lineIndices.push_back(index+1);
-                lineIndices.push_back(index);
-                lineIndices.push_back(index+2);
+                //lineIndices.push_back(index);
+                //lineIndices.push_back(index+1);
+                //lineIndices.push_back(index);
+                //lineIndices.push_back(index+2);
 
                 index += 3;     // for next
             }
@@ -150,10 +150,10 @@ bool SphereModel::init()
                 addIndices(index+2, index+1, index+3);
 
                 // indices for lines
-                lineIndices.push_back(index);
-                lineIndices.push_back(index+1);
-                lineIndices.push_back(index);
-                lineIndices.push_back(index+2);
+                //lineIndices.push_back(index);
+                //lineIndices.push_back(index+1);
+                //lineIndices.push_back(index);
+                //lineIndices.push_back(index+2);
 
                 index += 4;     // for next
             }

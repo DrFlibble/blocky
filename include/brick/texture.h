@@ -23,6 +23,8 @@ class Texture : private Geek::Logger
 
     void bind();
     bool generateTexture();
+
+    [[nodiscard]] Geek::Gfx::Surface* getSurface() const { return m_surface; }
 };
 
 #endif //BRICK_TEXTURE_H

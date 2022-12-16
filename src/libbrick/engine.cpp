@@ -61,6 +61,7 @@ bool BrickEngine::init()
     GL(glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST));
     GL(glEnable(GL_DEPTH_TEST));
     GL(glEnable(GL_CULL_FACE));
+    glEnable(GL_MULTISAMPLE);
 
     GL(glClearColor(0.0, 0.0, 0.0, 0));
     // clear stencil buffer
